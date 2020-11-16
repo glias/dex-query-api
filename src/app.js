@@ -9,6 +9,7 @@ const boolParser = require('express-query-boolean');
 const ordersRouter = require('./orders/router');
 const cellsRouter = require('./cells/router');
 const balanceRouter = require('./balance/router');
+const transactionsRouter = require('./transactions/router');
 const swagger = require('./swagger/middleware');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use(
   ordersRouter,
   cellsRouter,
   balanceRouter,
+  transactionsRouter,
 );
 
 app.use(expressWinston.errorLogger({

@@ -12,6 +12,7 @@
   "dependencies": {
     "@ckb-lumos/base": "0.13.1",
     "@ckb-lumos/indexer": "0.13.1",
+    "@nervosnetwork/ckb-sdk-core": "^0.37.0",
     "bignumber.js": "^9.0.1",
     "bn.js": "4.11.8",
     "body-parser": "1.15.2",
