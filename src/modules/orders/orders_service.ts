@@ -19,7 +19,6 @@ export default class OrdersService {
     type_code_hash,
     type_hash_type,
     type_args,
-    order_lock_args
   ): Promise<Array<DexOrderCellFormat>> {
     const orderCells = await this.indexer.collectCells({
       type: {
@@ -28,13 +27,17 @@ export default class OrdersService {
         args: type_args,
       },
       lock: {
-        code_hash: contracts.orderLock.codeHash,
-        hash_type: contracts.orderLock.hashType,
-        args: order_lock_args,
+        script: {
+          code_hash: contracts.orderLock.codeHash,
+          hash_type: contracts.orderLock.hashType,
+          args: "0x",
+        },
+        argsLen: 'any'
       },
     });
 
-    return CkbUtils.formatOrderCells(orderCells);
+    const REQUIRED_DATA_LENGTH = 84
+    return CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
   }
 
   async getBestPrice(

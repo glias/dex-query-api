@@ -76,16 +76,27 @@ export default class OrderController {
       type_code_hash,
       type_hash_type,
       type_args,
-      order_lock_args,
     } = req.query;
     try {
-      const result = await this.orderService.getOrders(
+      const orders = await this.orderService.getOrders(
         type_code_hash,
         type_hash_type,
         type_args,
-        order_lock_args
       );
-      res.status(200).json(result);
+      const bid_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>> = []
+      const ask_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>>= []
+      orders.forEach(({ isBid, sUDTAmount: sudt_amount, orderAmount: order_amount, price }) => {
+        const order = { sudt_amount, order_amount, price }
+        if (isBid) {
+          bid_orders.push(order)
+        } else {
+          ask_orders.push(order)
+        }
+      })
+      res.status(200).json({
+        bid_orders: bid_orders.sort((o1, o2) => Number(BigInt(o1.price) - BigInt(o2.price))).slice(0, 10),
+        ask_orders: ask_orders.sort((o1, o2) => Number(BigInt(o2.price) - BigInt(o1.price))).slice(0, 10),
+      });
     } catch (err) {
       console.error(err);
       res.status(500).send();

@@ -33,10 +33,10 @@ describe('Orders controller', () => {
   beforeEach(() => {
     orders = [
       {
-        // sUDTAmount: '5000000000',
-        // orderAmount: '15000000000',
-        // price: '50000000000',
-        // isBid: true,
+        sUDTAmount: '5000000000',
+        orderAmount: '15000000000',
+        price: '50000000000',
+        isBid: true,
         cell_output: {
           capacity: `0x${BigInt(200000000000).toString(16)}`,
           lock: {
@@ -59,10 +59,10 @@ describe('Orders controller', () => {
         data: CkbUtils.formatOrderData(5000000000n, 15000000000n, 50000000000n, true),
       },
       {
-        // sUDTAmount: '5000000000',
-        // orderAmount: '15000000000',
-        // price: '70000000000',
-        // isBid: true,
+        sUDTAmount: '5000000000',
+        orderAmount: '15000000000',
+        price: '70000000000',
+        isBid: true,
         cell_output: {
           capacity: `0x${BigInt(200000000000).toString(16)}`,
           lock: {
@@ -85,10 +85,10 @@ describe('Orders controller', () => {
         data: CkbUtils.formatOrderData(5000000000n, 15000000000n, 70000000000n, true),
       },
       {
-        // sUDTAmount: '50000000000',
-        // orderAmount: '100000000000',
-        // price: '50000000000',
-        // isBid: false,
+        sUDTAmount: '50000000000',
+        orderAmount: '100000000000',
+        price: '50000000000',
+        isBid: false,
         cell_output: {
           capacity: `0x${BigInt(80000000000).toString(16)}`,
           lock: {
@@ -111,10 +111,10 @@ describe('Orders controller', () => {
         data: CkbUtils.formatOrderData(50000000000n, 100000000000n, 50000000000n, false),
       },
       {
-        // sUDTAmount: '50000000000',
-        // orderAmount: '100000000000',
-        // price: '55000000000',
-        // isBid: false,
+        sUDTAmount: '50000000000',
+        orderAmount: '100000000000',
+        price: '55000000000',
+        isBid: false,
         cell_output: {
           capacity: `0x${BigInt(80000000000).toString(16)}`,
           lock: {
@@ -951,4 +951,49 @@ describe('Orders controller', () => {
       });
     });
   });
+
+  describe('#getOrders()', () => {
+    beforeEach(() => {
+      const TYPE_SCRIPT = {
+        code_hash: '0xe1e354d6d643ad42724d40967e334984534e0367405c5ae42a9d7d63d77df419',
+        hash_type: 'data',
+        args: '0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947'
+      }
+      req.query.type_code_hash = TYPE_SCRIPT.code_hash
+      req.query.type_hash_type = TYPE_SCRIPT.hash_type
+      req.query.type_args = TYPE_SCRIPT.args;
+      mock_cell.resolves(orders)
+    })
+
+    it('should return bid orders and ask orders', async () => {
+      await controller.getOrders(req, res, next);
+      res.status.should.have.been.calledWith(200);
+      res.json.should.have.been.calledWith({
+        ask_orders: [
+          {
+            order_amount: "100000000000",
+            price: "55000000000",
+            sudt_amount: "50000000000",
+          },
+          { 
+            order_amount: "100000000000",
+            price: "50000000000",
+            sudt_amount: "50000000000",
+          },
+        ],
+        bid_orders: [
+          {
+            order_amount: "15000000000",
+            price: "50000000000",
+            sudt_amount: "5000000000",
+          },
+          { 
+            order_amount: "15000000000",
+            price: "70000000000",
+            sudt_amount: "5000000000"
+          },
+        ]
+      });
+    })
+  })
 });
