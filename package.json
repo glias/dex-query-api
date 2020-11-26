@@ -9,6 +9,7 @@
     "test:watch": "env NODE_ENV=test mocha -p tsconfig.json './src/test/**/*.spec.ts' --watch",
     "dev:build": "tsc -w",
     "dev:start": "nodemon node ./build/app.js",
+    "lint": "eslint ./src",
     "dev": "tsc && concurrently npm:dev:*"
   },
   "mocha": {
