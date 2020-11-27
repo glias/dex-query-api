@@ -75,7 +75,8 @@ export default class CellsSerive {
   }
 
   private collectCellsBySudtAmount(cells: Cell[], amount: bigint, spentCells: any) {    
-    cells.sort((a, b) => {
+    
+    cells.sort((a, b) => {      
       const aSudtAmount = CkbUtils.readBigUInt128LE(a.data);
       const bSudtAmount = CkbUtils.readBigUInt128LE(b.data);
 
@@ -90,6 +91,9 @@ export default class CellsSerive {
         continue;
       }
 
+      if (cell.data.length !== 34 || !cell.data.startsWith("0x")) {
+        continue;
+      }
       summedAmount += CkbUtils.readBigUInt128LE(cell.data);
       collectedCells.push(cell);
 
