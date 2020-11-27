@@ -40,6 +40,16 @@ export default class OrdersService {
     return CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
   }
 
+  async getCurrentPrice(type: { code_hash: string, args: string, hash_type: 'data' | 'type' }): Promise<string> {
+    const orders = await this.indexer.getLastMatchOrders(type);
+    if (!orders) {
+      return '';
+    }
+    const bid_price = new BigNumber(orders.bid_orders.sort((o1, o2) => Number(o1.price - o2.price))[0].price.toString());
+    const ask_price = new BigNumber(orders.ask_orders.sort((o1, o2) => Number(o2.price - o1.price))[0].price.toString());
+    return (bid_price.plus(ask_price)).dividedBy(2).toString();
+  }
+
   async getBestPrice(
     type_code_hash,
     type_hash_type,

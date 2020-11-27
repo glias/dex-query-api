@@ -53,12 +53,6 @@ export default class OrderController {
           required: true,
           description: "",
         },
-        order_lock_args: {
-          name: "order_lock_args",
-          type: "string",
-          required: true,
-          description: "",
-        },
       },
     },
     responses: {
@@ -100,6 +94,56 @@ export default class OrderController {
         bid_orders: bid_orders.sort((o1, o2) => Number(BigInt(o1.price) - BigInt(o2.price))).slice(0, 10),
         ask_orders: ask_orders.sort((o1, o2) => Number(BigInt(o2.price) - BigInt(o1.price))).slice(0, 10),
       });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send();
+    }
+  }
+  
+  @ApiOperationGet({
+    path: "current price",
+    description: "Get current price",
+    summary: "Get current price",
+    parameters: {
+      query: {
+        type_code_hash: {
+          name: "type_code_hash",
+          type: "string",
+          required: true,
+          description: "",
+        },
+        type_hash_type: {
+          name: "type_hash_type",
+          type: "string",
+          required: true,
+          description: "",
+        },
+        type_args: {
+          name: "type_args",
+          type: "string",
+          required: true,
+          description: "",
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Success",
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+      400: { description: "Parameters fail" },
+    },
+  })
+  @httpGet("current-price")
+  async getCurrentPrice(req: express.Request, res: express.Response): Promise<void> {
+    const {
+      type_code_hash: code_hash,
+      type_hash_type: hash_type,
+      type_args: args,
+    } = req.query as Record<string, any>;
+    try {
+      const price = await this.orderService.getCurrentPrice({ code_hash, hash_type, args })
+      res.status(200).json(price);
     } catch (err) {
       console.error(err);
       res.status(500).send();

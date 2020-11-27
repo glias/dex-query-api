@@ -1,4 +1,5 @@
-import { Cell, HexString } from "@ckb-lumos/base";
+import { Cell, HexString, Output } from "@ckb-lumos/base";
+import { contracts } from '../config';
 
 export interface DexOrderData {
   sUDTAmount: bigint;
@@ -113,5 +114,14 @@ export class CkbUtils {
 
     const dataHex = udtAmountHex + orderAmountHex + priceHex + isBidHex;
     return dataHex;
+  }
+
+  static isOrder(type: { code_hash: string, hash_type: 'data' | 'type', args: string }, output: Output): boolean {
+    return output.type
+      && output.lock.code_hash === contracts.orderLock.codeHash
+      && output.lock.hash_type === contracts.orderLock.hashType
+      && output.type.code_hash === type.code_hash
+      && output.type.hash_type === type.hash_type
+      && output.type.args === type.args
   }
 }

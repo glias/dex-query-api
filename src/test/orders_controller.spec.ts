@@ -28,6 +28,7 @@ describe('Orders controller', () => {
   let orders;
   let mock_cell;
   let mock_transaction;
+  let mock_last_match_orders;
 
 
   beforeEach(() => {
@@ -145,12 +146,16 @@ describe('Orders controller', () => {
       collectTransactions(queryOptions: QueryOptions): Promise<TransactionWithStatus[]> {
         return null;
       }
+      getLastMatchOrders(type) {
+        return null;
+      }
 
     }
 
     const mock: MockIndex = new MockIndex();
     mock_cell = sinon.stub(mock, 'collectCells');  
     mock_transaction = sinon.stub(mock, 'collectTransactions');  
+    mock_last_match_orders = sinon.stub(mock, 'getLastMatchOrders');
     
     const service = new OrdersService(mock);
     const historyService = new OrdersHistoryService(mock);
@@ -1047,5 +1052,52 @@ describe('Orders controller', () => {
         ]
       });
     })
+  })
+
+  describe('#getCurrentPrice', () => {
+    beforeEach(() => {
+      const TYPE_SCRIPT = {
+        code_hash: '0xe1e354d6d643ad42724d40967e334984534e0367405c5ae42a9d7d63d77df419',
+        hash_type: 'data',
+        args: '0x32e555f3ff8e135cece1351a6a2971518392c1e30375c1e006ad0ce8eac07947'
+      };
+      req.query.type_code_hash = TYPE_SCRIPT.code_hash;
+      req.query.type_hash_type = TYPE_SCRIPT.hash_type;
+      req.query.type_args = TYPE_SCRIPT.args;;
+    })
+
+    describe('when orders are found', () => {
+      beforeEach(() => {
+        mock_last_match_orders.resolves({
+          ask_orders: [
+            { sUDTAmount: 9775000006n, orderAmount: 0n, price: 20000000000n, isBid: false },
+            { sUDTAmount: 9775000006n, orderAmount: 0n, price: 10000000000n, isBid: false }
+          ],
+          bid_orders: [
+            { sUDTAmount: 4087736789n, orderAmount: 0n, price: 30000000000n, isBid: true },
+            { sUDTAmount: 6580259222n, orderAmount: 0n, price: 10000000000n, isBid: true }
+          ]
+        });
+      })
+
+      it('should return bid orders and ask orders', async () => {
+        await controller.getCurrentPrice(req, res, next);
+        res.status.should.have.been.calledWith(200);
+        res.json.should.have.been.calledWith("15000000000");
+      })
+    })
+
+    describe('when orders are not found', () => {
+      beforeEach(() => {
+        mock_last_match_orders.resolves(null);
+      })
+
+      it('should return bid orders and ask orders', async () => {
+        await controller.getCurrentPrice(req, res, next);
+        res.status.should.have.been.calledWith(200);
+        res.json.should.have.been.calledWith("");
+      })
+    })
+
   })
 });

@@ -103,6 +103,9 @@ describe('Balance controller', () => {
       collectTransactions(queryOptions: QueryOptions): Promise<TransactionWithStatus[]> {
         return null;
       }
+      getLastMatchOrders(type) {
+        return null;
+      }
   
     }
   
