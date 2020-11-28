@@ -97,8 +97,8 @@ export default class OrderController {
         }
       })
       res.status(200).json({
-        bid_orders: bid_orders.sort((o1, o2) => Number(BigInt(o1.price) - BigInt(o2.price))).slice(0, 10),
-        ask_orders: ask_orders.sort((o1, o2) => Number(BigInt(o2.price) - BigInt(o1.price))).slice(0, 10),
+        bid_orders: bid_orders.slice(0, 5),
+        ask_orders: ask_orders.slice(0, 5),
       });
     } catch (err) {
       console.error(err);
