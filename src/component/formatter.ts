@@ -14,6 +14,7 @@ export interface DexOrderCellFormat {
   price: string;
   isBid: boolean;
   rawData: Cell;
+  timestamp?: number;
 }
 
 export class CkbUtils {

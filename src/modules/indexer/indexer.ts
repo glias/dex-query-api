@@ -1,4 +1,4 @@
-import { Cell, QueryOptions, TransactionWithStatus, Transaction } from "@ckb-lumos/base";
+import { Cell, QueryOptions, TransactionWithStatus, Transaction, Script } from "@ckb-lumos/base";
 import {
   Indexer,
   CellCollector,
@@ -47,7 +47,7 @@ export default class IndexerWrapper implements IndexerService {
   }
 
   async getLastMatchOrders(
-    type: { code_hash: string, args: string, hash_type: 'data' | 'type' }
+    type: Script
   ): Promise<Record<'ask_orders' | 'bid_orders', Array<DexOrderData>> | null> {
     const transactionCollector = new TransactionCollector(
       this.indexer,

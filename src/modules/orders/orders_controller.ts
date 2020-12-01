@@ -80,17 +80,25 @@ export default class OrderController {
       );
       const bid_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>> = []
       const ask_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>>= []
-      orders.forEach(({ isBid, sUDTAmount: sudt_amount, orderAmount: order_amount, price }) => {
-        if (order_amount === '0') {
-          return
-        }
-        const order = { sudt_amount, order_amount, price }
-        if (isBid) {
-          bid_orders.push(order)
-        } else {
-          ask_orders.push(order)
-        }
-      })
+      orders.sort((o1, o2) => Number(o1.timestamp - o2.timestamp))
+        .reverse()
+        .forEach(({ isBid, sUDTAmount: sudt_amount, orderAmount: order_amount, price }) => {
+          if (order_amount === '0') {
+            return
+          }
+          const order = { sudt_amount, order_amount, price }
+          if (isBid) {
+            bid_orders.push(order)
+          } else {
+            ask_orders.push(order)
+          }
+        })
+        
+      console.log({
+        bid_orders: bid_orders.slice(0, 5),
+        ask_orders: ask_orders.slice(0, 5),
+      });
+        
       res.status(200).json({
         bid_orders: bid_orders.slice(0, 5),
         ask_orders: ask_orders.slice(0, 5),

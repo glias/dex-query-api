@@ -1,19 +1,21 @@
 import { inject, injectable, LazyServiceIdentifer } from "inversify";
 import BigNumber from "bignumber.js";
-import IndexerWrapper from "../indexer/indexer";
 
 import { modules } from "../../ioc";
 import { contracts } from "../../config";
 import { CkbUtils, DexOrderCellFormat } from "../../component";
 import BestPriceModel from "./best_price_model";
-import { IndexerService } from '../indexer/indexer_service';
 import { HashType } from '@ckb-lumos/base';
+import { DexRepository } from '../repository/dex_repository';
+import CkbRepository from '../repository/ckb_repository';
+
+
 
 @injectable()
 export default class OrdersService {
   constructor(
-    @inject(new LazyServiceIdentifer(() => modules[IndexerWrapper.name]))
-    private indexer: IndexerService
+    @inject(new LazyServiceIdentifer(() => modules[CkbRepository.name]))
+    private repository: DexRepository,
   ) {}
 
   async getOrders(
@@ -21,7 +23,7 @@ export default class OrdersService {
     type_hash_type: string,
     type_args: string,
   ): Promise<Array<DexOrderCellFormat>> {
-    const orderCells = await this.indexer.collectCells({
+    const orderCells = await this.repository.collectCells({
       type: {
         code_hash: type_code_hash,
         hash_type: <HashType>type_hash_type,
@@ -38,11 +40,21 @@ export default class OrdersService {
     });
 
     const REQUIRED_DATA_LENGTH = 84
-    return CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
+    const orders = CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
+
+    for await (const orderCell of orders) {
+      const time = await this.repository.getBlockTimestampByHash(orderCell.rawData.block_hash);
+      orderCell.timestamp = parseInt(time);
+    }
+
+    console.log(orders);
+    
+  
+    return orders;
   }
 
   async getCurrentPrice(type: { code_hash: string, args: string, hash_type: HashType }): Promise<string> {
-    const orders = await this.indexer.getLastMatchOrders(type);
+    const orders = await this.repository.getLastMatchOrders(type);
     if (!orders) {
       return '';
     }
@@ -57,7 +69,7 @@ export default class OrdersService {
     type_args: string,
     is_bid: boolean
   ): Promise<BestPriceModel> {
-    const orderCells = await this.indexer.collectCells({
+    const orderCells = await this.repository.collectCells({
       type: {
         code_hash: type_code_hash,
         hash_type: <HashType>type_hash_type,

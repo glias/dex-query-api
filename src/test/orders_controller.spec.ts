@@ -16,8 +16,10 @@ import OrdersHistoryService from '../modules/orders/orders_history_service';
 import OrderController from '../modules/orders/orders_controller';
 
 import { contracts } from "../config";
-import { IndexerService } from '../modules/indexer/indexer_service';
 import { QueryOptions, Cell, TransactionWithStatus } from '@ckb-lumos/base';
+import { DexRepository } from '../modules/repository/dex_repository';
+import CkbTransactionWithStatusModelWrapper from '../model/ckb/ckb_transaction_with_status';
+import { ckb_methons } from '../modules/ckb/ckb_service';
 
 
 describe('Orders controller', () => {
@@ -29,7 +31,6 @@ describe('Orders controller', () => {
   let mock_cell;
   let mock_transaction;
   let mock_last_match_orders;
-
 
   beforeEach(() => {
     orders = [
@@ -139,7 +140,7 @@ describe('Orders controller', () => {
       },
     ];
 
-    class MockIndex implements IndexerService {
+    class MockRepository implements DexRepository {
       collectCells(queryOptions: QueryOptions): Promise<Cell[]> {
         console.log(queryOptions + " is mock");
         return null;
@@ -153,12 +154,35 @@ describe('Orders controller', () => {
         return null;
       }
 
+      getTransactions(ckbReqParams: [method: ckb_methons, ...rest: []][]): Promise<Array<CkbTransactionWithStatusModelWrapper>> {
+        console.log(ckbReqParams + " is mock");
+        return null;
+      }
+
+      getTransactionByHash(txHash: string): Promise<CkbTransactionWithStatusModelWrapper> {
+        console.log(txHash + " is mock");
+        return null;
+      }
+  
+      getblockNumberByBlockHash(blockHash: string): Promise<number> {
+        console.log(blockHash + " is mock");
+        return null;
+      }
+  
+      async getBlockTimestampByHash(blockHash: string): Promise<string> {
+        console.log(blockHash + " is mock");
+        return "111";
+      }
+
     }
 
-    const mock: MockIndex = new MockIndex();
+    const mock: MockRepository = new MockRepository();
     mock_cell = sinon.stub(mock, 'collectCells');  
     mock_transaction = sinon.stub(mock, 'collectTransactions');  
     mock_last_match_orders = sinon.stub(mock, 'getLastMatchOrders');
+    // mock_query_block_time_by_hash = sinon.stub(mock, 'getBlockTimestampByHash');
+    
+
     
     const service = new OrdersService(mock);
     const historyService = new OrdersHistoryService(mock);
@@ -1078,24 +1102,24 @@ describe('Orders controller', () => {
         ask_orders: [
           {
             order_amount: "100000000000",
-            price: "50000000000",
+            price: "55000000000",
             sudt_amount: "50000000000",
           },
           { 
             order_amount: "100000000000",
-            price: "55000000000",
+            price: "50000000000",
             sudt_amount: "50000000000",
           },
         ],
         bid_orders: [
           {
             order_amount: "15000000000",
-            price: "50000000000",
+            price: "70000000000",
             sudt_amount: "5000000000",
           },
           { 
             order_amount: "15000000000",
-            price: "70000000000",
+            price: "50000000000",
             sudt_amount: "5000000000"
           },
         ]
