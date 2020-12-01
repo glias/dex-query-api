@@ -80,8 +80,7 @@ export default class OrderController {
       );
       const bid_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>> = []
       const ask_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>>= []
-      orders.sort((o1, o2) => Number(o1.timestamp - o2.timestamp))
-        .reverse()
+      orders
         .forEach(({ isBid, sUDTAmount: sudt_amount, orderAmount: order_amount, price }) => {
           if (order_amount === '0') {
             return

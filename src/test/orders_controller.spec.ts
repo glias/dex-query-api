@@ -1102,24 +1102,24 @@ describe('Orders controller', () => {
         ask_orders: [
           {
             order_amount: "100000000000",
-            price: "55000000000",
+            price: "50000000000",
             sudt_amount: "50000000000",
           },
           { 
             order_amount: "100000000000",
-            price: "50000000000",
+            price: "55000000000",
             sudt_amount: "50000000000",
           },
         ],
         bid_orders: [
           {
             order_amount: "15000000000",
-            price: "70000000000",
+            price: "50000000000",
             sudt_amount: "5000000000",
           },
           { 
             order_amount: "15000000000",
-            price: "50000000000",
+            price: "70000000000",
             sudt_amount: "5000000000"
           },
         ]

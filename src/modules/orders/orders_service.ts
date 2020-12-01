@@ -35,21 +35,14 @@ export default class OrdersService {
           hash_type: contracts.orderLock.hashType,
           args: "0x",
         },
-        argsLen: 'any'
+        argsLen: 'any',
       },
+      order: "desc"
     });
 
     const REQUIRED_DATA_LENGTH = 84
     const orders = CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
-
-    for await (const orderCell of orders) {
-      const time = await this.repository.getBlockTimestampByHash(orderCell.rawData.block_hash);
-      orderCell.timestamp = parseInt(time);
-    }
-
-    console.log(orders);
     
-  
     return orders;
   }
 
