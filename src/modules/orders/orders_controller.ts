@@ -93,11 +93,6 @@ export default class OrderController {
           }
         })
         
-      console.log({
-        bid_orders: bid_orders.slice(0, 5),
-        ask_orders: ask_orders.slice(0, 5),
-      });
-        
       res.status(200).json({
         bid_orders: bid_orders.slice(0, 5),
         ask_orders: ask_orders.slice(0, 5),
