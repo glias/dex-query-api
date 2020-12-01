@@ -21,15 +21,15 @@ export class DexLogger {
     this.logTag = `\x1b[${className}]\x1b[0m`;
   }
 
-  debug(message: string) {
+  debug(message: string): void {
     this.logger.debug(`${this.logTag}: ${message}`);
   }
 
-  info(message: string) {
+  info(message: string): void {
     this.logger.debug(`${this.logTag}: ${message}`);
   }
 
-  error(error: any) {
+  error(error: Record<string, unknown>): void {
     this.logger.error(`${this.logTag}: ${error}`);
   }
 }

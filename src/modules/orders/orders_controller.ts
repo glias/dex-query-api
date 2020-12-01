@@ -11,6 +11,7 @@ import { modules } from "../../ioc";
 import { DexLogger } from "../../component";
 import OrderService from "./orders_service";
 import OrdersHistoryService from "./orders_history_service";
+import { HashType } from '@ckb-lumos/base';
 
 @ApiPath({
   path: "/",
@@ -53,12 +54,6 @@ export default class OrderController {
           required: true,
           description: "",
         },
-        order_lock_args: {
-          name: "order_lock_args",
-          type: "string",
-          required: true,
-          description: "",
-        },
       },
     },
     responses: {
@@ -79,9 +74,9 @@ export default class OrderController {
     } = req.query;
     try {
       const orders = await this.orderService.getOrders(
-        type_code_hash,
-        type_hash_type,
-        type_args,
+        <string>type_code_hash,
+        <string>type_hash_type,
+        <string>type_args,
       );
       const bid_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>> = []
       const ask_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>>= []
@@ -100,6 +95,56 @@ export default class OrderController {
         bid_orders: bid_orders.slice(0, 5),
         ask_orders: ask_orders.slice(0, 5),
       });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send();
+    }
+  }
+  
+  @ApiOperationGet({
+    path: "current-price",
+    description: "Get current price",
+    summary: "Get current price",
+    parameters: {
+      query: {
+        type_code_hash: {
+          name: "type_code_hash",
+          type: "string",
+          required: true,
+          description: "",
+        },
+        type_hash_type: {
+          name: "type_hash_type",
+          type: "string",
+          required: true,
+          description: "",
+        },
+        type_args: {
+          name: "type_args",
+          type: "string",
+          required: true,
+          description: "",
+        },
+      },
+    },
+    responses: {
+      200: {
+        description: "Success",
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+      400: { description: "Parameters fail" },
+    },
+  })
+  @httpGet("current-price")
+  async getCurrentPrice(req: express.Request, res: express.Response): Promise<void> {
+    const {
+      type_code_hash: code_hash,
+      type_hash_type: hash_type,
+      type_args: args,
+    } = req.query as Record<string, string>;
+    try {
+      const price = await this.orderService.getCurrentPrice({ code_hash, hash_type: <HashType>hash_type, args })
+      res.status(200).json(price);
     } catch (err) {
       console.error(err);
       res.status(500).send();
@@ -156,10 +201,10 @@ export default class OrderController {
 
     try {
       const result = await this.orderService.getBestPrice(
-        type_code_hash,
-        type_hash_type,
-        type_args,
-        is_bid
+        <string>type_code_hash,
+        <string>type_hash_type,
+        <string>type_args,
+        <boolean>(<unknown>is_bid)
       );
 
       res.status(200).json(result);
@@ -224,10 +269,10 @@ export default class OrderController {
 
     try {
       const result = await this.orderHistoryService.getOrderHistory(
-        type_code_hash,
-        type_hash_type,
-        type_args,
-        order_lock_args
+        <string>type_code_hash,
+        <string>type_hash_type,
+        <string>type_args,
+        <string>order_lock_args
       );
 
       res.status(200).json(result);

@@ -5,6 +5,7 @@ import { modules } from "../../ioc";
 import { CkbUtils } from "../../component";
 import CellsAmountRequestModel from "./cells_amount_request_model";
 import { IndexerService } from '../indexer/indexer_service';
+import { OutPoint } from '../orders/orders_history_model';
 
 @injectable()
 export default class CellsSerive {
@@ -24,7 +25,6 @@ export default class CellsSerive {
     reqParam: CellsAmountRequestModel
   ): Promise<Array<Cell>> {
     const queryOptions = this.buildQueryParams(reqParam);
-    queryOptions.type = "empty";
 
     let cells = await this.indexer.collectCells(queryOptions);
 
@@ -46,6 +46,7 @@ export default class CellsSerive {
 
   private buildQueryParams(reqParam: CellsAmountRequestModel): QueryOptions {
     const queryOptions: QueryOptions = {};
+    queryOptions.type = "empty";
 
     if (
       reqParam.lock_code_hash &&
@@ -74,8 +75,9 @@ export default class CellsSerive {
     return queryOptions;
   }
 
-  private collectCellsBySudtAmount(cells: Cell[], amount: bigint, spentCells: any) {    
-    cells.sort((a, b) => {
+  private collectCellsBySudtAmount(cells: Cell[], amount: bigint, spentCells: Array<OutPoint>) {    
+    
+    cells.sort((a, b) => {      
       const aSudtAmount = CkbUtils.readBigUInt128LE(a.data);
       const bSudtAmount = CkbUtils.readBigUInt128LE(b.data);
 
@@ -90,6 +92,9 @@ export default class CellsSerive {
         continue;
       }
 
+      if (cell.data.length !== 34 || !cell.data.startsWith("0x")) {
+        continue;
+      }
       summedAmount += CkbUtils.readBigUInt128LE(cell.data);
       collectedCells.push(cell);
 
@@ -105,7 +110,7 @@ export default class CellsSerive {
     return collectedCells;
   }
 
-  private collectCellsByCKBAmount(cells: Cell[], amount: bigint, spentCells) {
+  private collectCellsByCKBAmount(cells: Cell[], amount: bigint, spentCells: Array<OutPoint>) {
     const filtered = cells.filter((cell) => cell.data === "0x");
 
     filtered.sort((a, b) => {
@@ -140,7 +145,7 @@ export default class CellsSerive {
     return collectedCells;
   }
 
-  private isSameCell(cell, spentCell) {
+  private isSameCell(cell: Cell, spentCell): boolean {
     const outPoint = cell.out_point;
     return (
       outPoint.index === spentCell.index &&

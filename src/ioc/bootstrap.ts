@@ -9,7 +9,7 @@ export default class Bootstrap {
 
   #ready = false;
 
-  async bootstrap() {
+  async bootstrap(): Promise<void> {
     if (!this.#ready) {
       try {
         await this.register();
@@ -47,14 +47,15 @@ export default class Bootstrap {
   }
 
   private async registerModule(modulePath: string) {
-    const { default: m } = await import(modulePath);
-    console.log(modulePath);
-    console.log(modulePath);
-    console.log(m);
-    console.log(m);
+    try {
+      const { default: m } = await import(modulePath);
+      
+      modules[m.name] = Symbol(m.name);
+      container.bind(modules[m.name]).to(m);
+      this.logger.debug("\x1b[36m${m.name}\x1b[0m is loaded");
+    } catch (error) {
+      this.logger.error(error);
+    }
 
-    modules[m.name] = Symbol(m.name);
-    container.bind(modules[m.name]).to(m);
-    this.logger.debug("\x1b[36m${m.name}\x1b[0m is loaded");
   }
 }

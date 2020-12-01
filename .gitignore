@@ -23,6 +23,10 @@ build
 
 ### ckb data ###
 indexer_data
+indexer_data_dev
 
 ### env ###
 .env
+
+### vscode ###
+.vscode

@@ -1,3 +1,4 @@
+import { OutPoint } from '@ckb-lumos/base';
 import { ApiModel, ApiModelProperty } from "swagger-express-ts";
 
 @ApiModel({
@@ -57,7 +58,7 @@ export default class CellsAmountRequestModel {
     description: "spent_cells",
     required: true,
   })
-  spent_cells?: string;
+  spent_cells?: Array<OutPoint>;
 
 }
 

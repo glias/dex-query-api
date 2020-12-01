@@ -1,6 +1,5 @@
 import { inject, injectable, LazyServiceIdentifer } from "inversify";
-import { QueryOptions } from "@ckb-lumos/base";
-import CKB from "@nervosnetwork/ckb-sdk-core";
+import { QueryOptions, Script } from "@ckb-lumos/base";
 
 import IndexerWrapper from "../indexer/indexer";
 import { modules } from "../../ioc";
@@ -13,7 +12,6 @@ import TransactionDetailsModel from './transaction_details_model';
 
 @injectable()
 export default class TxService {
-  private ckb: CKB;
 
   constructor(
     @inject(new LazyServiceIdentifer(() => modules[IndexerWrapper.name]))
@@ -22,7 +20,10 @@ export default class TxService {
     private ckbService: CkbService
   ) {}
 
-  async getSudtTransactions(reqParam: CkbRequestModel): Promise<any> {
+  async getSudtTransactions(reqParam: CkbRequestModel): Promise<Array<{
+    hash: string
+    income: string
+  }>> {
     const queryOptions: QueryOptions = {};
 
     if (reqParam.isValidLockScript()) {
@@ -47,11 +48,11 @@ export default class TxService {
           requests.push(["getTransaction", input.previous_output.tx_hash]);
         }
       }
-      const inputTxs = await this.ckb.rpc.createBatchRequest(requests).exec();
+      const inputTxs = await this.ckbService.getTransactions(requests);
       
       const inputTxsMap = new Map();
       for (const tx of inputTxs) {
-        inputTxsMap.set(tx.transaction.hash, tx);
+        inputTxsMap.set(tx.ckbTransactionWithStatus.transaction.hash, tx);
       }
 
       for (let i = 0; i < txsWithStatus.length; i++) {
@@ -71,13 +72,13 @@ export default class TxService {
           const inputIndex = parseInt(index, 16);
           const tx = inputTxsMap.get(tx_hash);
           if (tx) {
-            const cell = tx.transaction.outputs[inputIndex];
+            const cell = tx.ckbTransactionWithStatus.transaction.outputs[inputIndex];
             if (
               cell &&
-              this.isSameTypeScript(cell.lock, queryOptions.lock) &&
-              this.isSameTypeScript(cell.type, queryOptions.type)
+              this.isSameTypeScript(cell.lock, <Script>queryOptions.lock) &&
+              this.isSameTypeScript(cell.type, <Script>queryOptions.type)
             ) {
-              const data = tx.transaction.outputsData[inputIndex];
+              const data = tx.ckbTransactionWithStatus.transaction.outputsData[inputIndex];
               const amount = CkbUtils.parseAmountFromLeHex(data);
               inputSum += amount;
             }
@@ -87,8 +88,8 @@ export default class TxService {
         for (let j = 0; j < outputs.length; j++) {
           const output = outputs[j];
           if (
-            this.isSameTypeScript(output.type, queryOptions.type) &&
-            this.isSameTypeScript(output.lock, queryOptions.lock)
+            this.isSameTypeScript(output.type, <Script>queryOptions.type) &&
+            this.isSameTypeScript(output.lock, <Script>queryOptions.lock)
           ) {
             const amount = CkbUtils.parseAmountFromLeHex(outputs_data[j]);        
             outputSum += amount;
@@ -98,10 +99,13 @@ export default class TxService {
         const income = outputSum - inputSum;        
 
         if (income.toString() !== "0") {
-          console.log(inputSum, outputSum);
+          const blockHash: string = txWithStatus.tx_status.block_hash;          
+          const timestamp = await this.ckbService.getBlockTimestampByHash(blockHash);
+        
           txs.push({
             hash,
             income: income.toString(),
+            timestamp: parseInt(timestamp).toString()
           });
         }
       }
@@ -173,24 +177,24 @@ export default class TxService {
     }
   }
 
-  isSameTypeScript(script1, script2) {
+  isSameTypeScript(script1: Script, script2: Script): boolean {
     if (!script1 || !script2) {
       return false;
     }
-    const s1 = this.normalizeScript(script1);
-    const s2 = this.normalizeScript(script2);
+    // const s1 = this.normalizeScript(script1);
+    // const s2 = this.normalizeScript(script2);
     return (
-      s1.code_hash === s2.code_hash &&
-      s1.hash_type === s2.hash_type &&
-      s1.args === s2.args
+      script1.code_hash === script2.code_hash &&
+      script1.hash_type === script2.hash_type &&
+      script1.args === script2.args
     );
   }
 
-  normalizeScript(script) {
-    return {
-      code_hash: script.code_hash || script.codeHash,
-      hash_type: script.hash_type || script.hashType,
-      args: script.args,
-    };
-  }
+  // normalizeScript(script) {
+  //   return {
+  //     code_hash: script.code_hash || script.codeHash,
+  //     hash_type: script.hash_type || script.hashType,
+  //     args: script.args,
+  //   };
+  // }
 }

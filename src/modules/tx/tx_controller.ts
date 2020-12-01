@@ -85,26 +85,28 @@ export default class TxController {
   async getSudtTransactions(
     req: express.Request,
     res: express.Response
-  ): Promise<any> {
+  ): Promise<void> {
     const reqParam: CkbRequestModel = CkbRequestModel.buildReqParam(
-      req.query.type_code_hash,
-      req.query.type_hash_type,
-      req.query.type_args,
-      req.query.lock_code_hash,
-      req.query.lock_hash_type,
-      req.query.lock_args
+      <string>req.query.type_code_hash,
+      <string>req.query.type_hash_type,
+      <string>req.query.type_args,
+      <string>req.query.lock_code_hash,
+      <string>req.query.lock_hash_type,
+      <string>req.query.lock_args
     );
 
     if (!reqParam.isValidLockScript() && !reqParam.isValidTypeScript()) {
-      return res.status(400).json({
+      res.status(400).json({
         error: "requires either lock or type script specified as parameters",
       });
+
+      return;
     }
 
     try {
-      const result = await this.txService.getSudtTransactions(reqParam);
+      const txs = await this.txService.getSudtTransactions(reqParam);
 
-      res.status(200).json(result);
+      res.status(200).json(txs);
     } catch (err) {
       console.error(err);
       res.status(500).send();
@@ -176,12 +178,12 @@ export default class TxController {
     res: express.Response
   ): Promise<TransactionDetailsModel> {
     const reqParam: CkbRequestModel = CkbRequestModel.buildReqParam(
-      req.query.type_code_hash,
-      req.query.type_hash_type,
-      req.query.type_args,
-      req.query.lock_code_hash,
-      req.query.lock_hash_type,
-      req.query.lock_args
+      <string>req.query.type_code_hash,
+      <string>req.query.type_hash_type,
+      <string>req.query.type_args,
+      <string>req.query.lock_code_hash,
+      <string>req.query.lock_hash_type,
+      <string>req.query.lock_args
     );
 
     if (!reqParam.isValidLockScript() && !reqParam.isValidTypeScript()) {

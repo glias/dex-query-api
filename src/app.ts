@@ -7,6 +7,7 @@ import Bootstrap from "./ioc/bootstrap";
 import * as swagger from "swagger-express-ts";
 import helmet from 'helmet';
 import cors from 'cors';
+import morgan from 'morgan';
 import { port } from "./config";
 
 export class DexQueryApiServer {
@@ -16,7 +17,7 @@ export class DexQueryApiServer {
     const server = new InversifyExpressServer(container);
 
     server.setConfig((app) => {
-      app.use(helmet());
+      app.use(helmet({ contentSecurityPolicy: false }));
       app.use(cors());
       app.use(
         bodyParser.urlencoded({
@@ -44,6 +45,8 @@ export class DexQueryApiServer {
           },
         })
       );
+      
+      app.use(morgan('short'));
     });
 
     const serverInstance = server.build();
