@@ -77,7 +77,7 @@ export class CkbUtils {
     return formattedOrderCells;
   }
 
-  static formatBigUInt128LE(u128) {
+  static formatBigUInt128LE(u128: bigint): string {
     const U128_MAX = BigInt(2) ** BigInt(128) - BigInt(1);
     const U128_MIN = BigInt(0);
 
@@ -93,7 +93,7 @@ export class CkbUtils {
     return `0x${buf.toString("hex")}`;
   }
 
-  static formatOrderData(currentAmount, orderAmount, price, isBid) {
+  static formatOrderData(currentAmount: bigint, orderAmount: bigint, price: bigint, isBid: boolean): string {
     const udtAmountHex = this.formatBigUInt128LE(currentAmount);
     if (isBid === undefined) {
       return udtAmountHex;

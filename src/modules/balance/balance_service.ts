@@ -7,6 +7,7 @@ import { CkbUtils, DexLogger } from "../../component";
 import BalanceCkbModel from "./balance_ckb_model";
 import BalanceSudtModel from "./balance_sudt_model";
 import { IndexerService } from '../indexer/indexer_service';
+import CkbRequestModel from '../../model/req/ckb_request_model';
 
 @injectable()
 export default class BalanceService {
@@ -19,17 +20,10 @@ export default class BalanceService {
   }
 
   async getCKBBalance(
-    lock_code_hash: any,
-    lock_hash_type: any,
-    lock_args: any
+    reqParms: CkbRequestModel
   ): Promise<BalanceCkbModel> {
     
-    const queryLock: Script = {
-      code_hash: lock_code_hash,
-      hash_type: lock_hash_type,
-      args: lock_args,
-    };
-
+    const queryLock: Script = reqParms.lockScript();
     const cells = await this.indexer.collectCells({
       lock: queryLock,
     });  
@@ -76,25 +70,12 @@ export default class BalanceService {
   }
 
   async getSUDTBalance(
-    lock_code_hash: any,
-    lock_hash_type: any,
-    lock_args: any,
-    type_code_hash: any,
-    type_hash_type: any,
-    type_args: any
+    reqParms: CkbRequestModel
   ): Promise<BalanceSudtModel> {
 
     const queryOptions: QueryOptions = {
-      lock: {
-        code_hash: lock_code_hash,
-        hash_type: lock_hash_type,
-        args: lock_args,
-      },
-      type: {
-        code_hash: type_code_hash,
-        hash_type: type_hash_type,
-        args: type_args,
-      },
+      lock: reqParms.lockScript(),
+      type: reqParms.typeScript()
     };
 
     const cells = await this.indexer.collectCells(queryOptions);

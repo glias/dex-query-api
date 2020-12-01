@@ -5,6 +5,7 @@ import { modules } from "../../ioc";
 import { CkbUtils } from "../../component";
 import CellsAmountRequestModel from "./cells_amount_request_model";
 import { IndexerService } from '../indexer/indexer_service';
+import { OutPoint } from '../orders/orders_history_model';
 
 @injectable()
 export default class CellsSerive {
@@ -74,7 +75,7 @@ export default class CellsSerive {
     return queryOptions;
   }
 
-  private collectCellsBySudtAmount(cells: Cell[], amount: bigint, spentCells: any) {    
+  private collectCellsBySudtAmount(cells: Cell[], amount: bigint, spentCells: Array<OutPoint>) {    
     
     cells.sort((a, b) => {      
       const aSudtAmount = CkbUtils.readBigUInt128LE(a.data);
@@ -109,7 +110,7 @@ export default class CellsSerive {
     return collectedCells;
   }
 
-  private collectCellsByCKBAmount(cells: Cell[], amount: bigint, spentCells) {
+  private collectCellsByCKBAmount(cells: Cell[], amount: bigint, spentCells: Array<OutPoint>) {
     const filtered = cells.filter((cell) => cell.data === "0x");
 
     filtered.sort((a, b) => {
@@ -144,7 +145,7 @@ export default class CellsSerive {
     return collectedCells;
   }
 
-  private isSameCell(cell, spentCell) {
+  private isSameCell(cell: Cell, spentCell): boolean {
     const outPoint = cell.out_point;
     return (
       outPoint.index === spentCell.index &&

@@ -1,6 +1,4 @@
-import { Script } from '@ckb-lumos/base';
 import { CkbUtils } from "../../component";
-import CkbRequestModel from '../req/ckb_request_model';
 import CkbCellScriptModel from "./ckb_cell_script";
 import CkbTransactionModel from "./ckb_transaction";
 import CkbTransactionStatusModel from "./ckb_transaction_status";
@@ -12,7 +10,7 @@ export interface CkbTransactionWithStatusModel {
 
 export default class CkbTransactionWithStatusModelWrapper {
   ckbTransactionWithStatus: CkbTransactionWithStatusModel;
-  constructor(ckbTransactionWithStatus: any) {
+  constructor(ckbTransactionWithStatus: CkbTransactionWithStatusModel) {
     this.ckbTransactionWithStatus = ckbTransactionWithStatus;
   }
 
@@ -52,7 +50,7 @@ export default class CkbTransactionWithStatusModelWrapper {
       inputAmount += amount;
     }    
 
-    return inputAmount - outputAmount;
+    return outputAmount - inputAmount;
   }
 
   getCkbAmountByScript(
@@ -82,7 +80,7 @@ export default class CkbTransactionWithStatusModelWrapper {
 
     const fee = this.getFee(inputTransactions);
 
-    return inputAmount - outputAmount - fee;
+    return outputAmount - (inputAmount + fee);
   }
 
   public getFee(

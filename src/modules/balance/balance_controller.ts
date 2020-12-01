@@ -9,6 +9,7 @@ import {
 import * as express from "express";
 import BalanceService from "./balance_service";
 import { DexLogger } from "../../component";
+import CkbRequestModel from '../../model/req/ckb_request_model';
 
 @ApiPath({
   path: "/",
@@ -65,20 +66,23 @@ export default class BalanceController {
     req: express.Request,
     res: express.Response
   ): Promise<express.Response<void>> {
-    const { lock_code_hash, lock_hash_type, lock_args } = req.query;
+    const reqParms = CkbRequestModel.buildReqParam(
+      null,
+      null,
+      null,
+      <string>req.query.lock_code_hash,
+      <string>req.query.lock_hash_type,
+      <string>req.query.lock_args,
+    );
     
-    if (!this.isValidScript(lock_code_hash, lock_hash_type, lock_args)) {
+    if (!reqParms.isValidLockScript()) {
       return res
         .status(400)
         .json({ error: "requires lock script to be specified as parameters" });
     }
 
     try {
-      const result = await this.banlanceService.getCKBBalance(
-        lock_code_hash,
-        lock_hash_type,
-        lock_args
-      );
+      const result = await this.banlanceService.getCKBBalance(reqParms);
 
       res.status(200).json(result);
     } catch (err) {
@@ -145,19 +149,18 @@ export default class BalanceController {
     req: express.Request,
     res: express.Response
   ): Promise<express.Response<void>> {
-    const {
-      lock_code_hash,
-      lock_hash_type,
-      lock_args,
-      type_code_hash,
-      type_hash_type,
-      type_args,
-    } = req.query;
+
+    const reqParms = CkbRequestModel.buildReqParam(
+      <string>req.query.type_code_hash,
+      <string>req.query.type_hash_type,
+      <string>req.query.type_args,
+      <string>req.query.lock_code_hash,
+      <string>req.query.lock_hash_type,
+      <string>req.query.lock_args,
+    );
 
     if (
-      !this.isValidScript(lock_code_hash, lock_hash_type, lock_args) ||
-      !this.isValidScript(type_code_hash, type_hash_type, type_args)
-    ) {
+      !reqParms.isValidLockScript() || !reqParms.isValidTypeScript()) {
       return res.status(400).json({
         error:
           "requires both lock and type scripts to be specified as parameters",
@@ -165,14 +168,7 @@ export default class BalanceController {
     }
 
     try {
-      const result = await this.banlanceService.getSUDTBalance(
-        lock_code_hash,
-        lock_hash_type,
-        lock_args,
-        type_code_hash,
-        type_hash_type,
-        type_args
-      );
+      const result = await this.banlanceService.getSUDTBalance(reqParms);
       res.status(200).json(result);
     } catch (err) {
       console.error(err);
@@ -180,7 +176,7 @@ export default class BalanceController {
     }
   }
 
-  private isValidScript(codeHash: any, hashType: any, args: any) {
+  private isValidScript(codeHash: string, hashType: string, args: string) {
     return codeHash && hashType && args;
   }
 }

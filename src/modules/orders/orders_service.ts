@@ -7,6 +7,7 @@ import { contracts } from "../../config";
 import { CkbUtils, DexOrderCellFormat } from "../../component";
 import BestPriceModel from "./best_price_model";
 import { IndexerService } from '../indexer/indexer_service';
+import { HashType } from '@ckb-lumos/base';
 
 @injectable()
 export default class OrdersService {
@@ -16,14 +17,14 @@ export default class OrdersService {
   ) {}
 
   async getOrders(
-    type_code_hash,
-    type_hash_type,
-    type_args,
+    type_code_hash: string,
+    type_hash_type: string,
+    type_args: string,
   ): Promise<Array<DexOrderCellFormat>> {
     const orderCells = await this.indexer.collectCells({
       type: {
         code_hash: type_code_hash,
-        hash_type: type_hash_type,
+        hash_type: <HashType>type_hash_type,
         args: type_args,
       },
       lock: {
@@ -40,7 +41,7 @@ export default class OrdersService {
     return CkbUtils.formatOrderCells(orderCells.filter(o => o.data.length === REQUIRED_DATA_LENGTH));
   }
 
-  async getCurrentPrice(type: { code_hash: string, args: string, hash_type: 'data' | 'type' }): Promise<string> {
+  async getCurrentPrice(type: { code_hash: string, args: string, hash_type: HashType }): Promise<string> {
     const orders = await this.indexer.getLastMatchOrders(type);
     if (!orders) {
       return '';
@@ -51,15 +52,15 @@ export default class OrdersService {
   }
 
   async getBestPrice(
-    type_code_hash,
-    type_hash_type,
-    type_args,
-    is_bid
+    type_code_hash: string,
+    type_hash_type: string,
+    type_args: string,
+    is_bid: boolean
   ): Promise<BestPriceModel> {
     const orderCells = await this.indexer.collectCells({
       type: {
         code_hash: type_code_hash,
-        hash_type: type_hash_type,
+        hash_type: <HashType>type_hash_type,
         args: type_args,
       },
       lock: {

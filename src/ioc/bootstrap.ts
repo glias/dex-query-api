@@ -9,7 +9,7 @@ export default class Bootstrap {
 
   #ready = false;
 
-  async bootstrap() {
+  async bootstrap(): Promise<void> {
     if (!this.#ready) {
       try {
         await this.register();

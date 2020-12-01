@@ -43,12 +43,12 @@ export default class CkbRequestModel {
   lock_args: string;
 
   static buildReqParam(
-    type_code_hash,
-    type_hash_type,
-    type_args,
-    lock_code_hash,
-    lock_hash_type,
-    lock_args
+    type_code_hash: string,
+    type_hash_type: string,
+    type_args: string,
+    lock_code_hash: string,
+    lock_hash_type: string,
+    lock_args: string
   ): CkbRequestModel {
     const reqParam: CkbRequestModel = new CkbRequestModel();
 

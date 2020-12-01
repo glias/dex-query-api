@@ -7,6 +7,7 @@ import Bootstrap from "./ioc/bootstrap";
 import * as swagger from "swagger-express-ts";
 import helmet from 'helmet';
 import cors from 'cors';
+import morgan from 'morgan';
 import { port } from "./config";
 
 export class DexQueryApiServer {
@@ -44,6 +45,8 @@ export class DexQueryApiServer {
           },
         })
       );
+      
+      app.use(morgan('short'));
     });
 
     const serverInstance = server.build();

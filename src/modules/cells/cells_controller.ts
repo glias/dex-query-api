@@ -264,11 +264,11 @@ export default class CellsController {
     }
   }
 
-  private isValidScript(codeHash: any, hashType: any, args: any) {
+  private isValidScript(codeHash: string, hashType: string, args: string) {
     return codeHash && hashType && args;
   }
 
-  private checkRequestParams(reqParam: CellsAmountRequestModel): any {
+  private checkRequestParams(reqParam: CellsAmountRequestModel): {[key: string]: string } {
     if (reqParam.ckb_amount && reqParam.sudt_amount) {
       return {
         error: "only support query either with ckb_amount or sudt_amount",

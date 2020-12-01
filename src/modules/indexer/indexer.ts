@@ -24,8 +24,8 @@ export default class IndexerWrapper implements IndexerService {
     }, 5000);
   }
 
-  async collectCells(queryOptons: QueryOptions): Promise<Array<Cell>> {  
-    const cellCollector = new CellCollector(this.indexer, queryOptons);
+  async collectCells(queryOptions: QueryOptions): Promise<Array<Cell>> {  
+    const cellCollector = new CellCollector(this.indexer, queryOptions);
 
     const cells = [];
     for await (const cell of cellCollector.collect()) cells.push(cell);
