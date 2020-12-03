@@ -10,7 +10,7 @@ import sinonStubPromise from "sinon-stub-promise";
 sinonStubPromise(sinon);
 
 import { mockReq, mockRes } from "sinon-express-mock";
-import { CkbUtils } from "../component/formatter";
+import { CkbUtils, DexOrderData } from "../component/formatter";
 import OrdersService from '../modules/orders/orders_service';
 import OrdersHistoryService from '../modules/orders/orders_history_service';
 import OrderController from '../modules/orders/orders_controller';
@@ -141,6 +141,14 @@ describe('Orders controller', () => {
     ];
 
     class MockRepository implements DexRepository {
+      getPlaceOrder(queryOptions: QueryOptions): Promise<DexOrderData[]> {
+        console.log(queryOptions + " is mock");      
+        return null;
+      }
+
+      tip(): Promise<number> {
+        return null;
+      }
       collectCells(queryOptions: QueryOptions): Promise<Cell[]> {
         console.log(queryOptions + " is mock");
         return null;

@@ -82,10 +82,14 @@ export default class OrderController {
       const ask_orders: Array<Record<'order_amount'|'sudt_amount'|'price',string>>= []
       orders
         .forEach(({ isBid, sUDTAmount: sudt_amount, orderAmount: order_amount, price }) => {
-          if (order_amount === '0') {
+          if (order_amount === BigInt(0)) {
             return
           }
-          const order = { sudt_amount, order_amount, price }
+          const order = { 
+            sudt_amount: sudt_amount.toString(), 
+            order_amount: order_amount.toString(), 
+            price: price.toString() 
+          }
           if (isBid) {
             bid_orders.push(order)
           } else {

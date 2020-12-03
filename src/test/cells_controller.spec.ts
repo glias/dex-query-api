@@ -10,7 +10,7 @@ import sinonStubPromise from "sinon-stub-promise";
 sinonStubPromise(sinon);
 
 import { mockReq, mockRes } from "sinon-express-mock";
-import { CkbUtils } from "../component/formatter";
+import { CkbUtils, DexOrderData } from "../component/formatter";
 import { Cell, QueryOptions, TransactionWithStatus } from '@ckb-lumos/base';
 
 import { IndexerService } from '../modules/indexer/indexer_service';
@@ -77,6 +77,15 @@ describe('Cells controller', () => {
 
   beforeEach(() => {
     class MockIndex implements IndexerService {
+      getPlaceOrder(queryOptions: QueryOptions): Promise<DexOrderData[]> {
+        console.log(queryOptions + " is mock");      
+        return null;
+      }
+
+      tip(): Promise<number> {
+        return null;
+      }
+
       collectCells(queryOptions: QueryOptions): Promise<Cell[]> {
         console.log(queryOptions + " is mock");
         return null;

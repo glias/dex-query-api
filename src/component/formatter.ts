@@ -6,6 +6,7 @@ export interface DexOrderData {
   orderAmount: bigint;
   price: bigint;
   isBid: boolean;
+  block_number?: number;
 }
 
 export interface DexOrderCellFormat {
@@ -75,6 +76,21 @@ export class CkbUtils {
       return result;
     });
     return formattedOrderCells;
+  }
+
+  static formatOrderCell(orderCell: Cell): DexOrderCellFormat {
+    
+    const parsedOrderData = this.parseOrderData(orderCell.data);
+
+    const result: DexOrderCellFormat = {
+      sUDTAmount: parsedOrderData.sUDTAmount.toString(),
+      orderAmount: parsedOrderData.orderAmount.toString(),
+      price: parsedOrderData.price.toString(),
+      isBid: parsedOrderData.isBid,
+      rawData: orderCell,
+    };
+
+    return result;
   }
 
   static formatBigUInt128LE(u128: bigint): string {

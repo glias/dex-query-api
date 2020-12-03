@@ -3,13 +3,11 @@ import BigNumber from "bignumber.js";
 
 import { modules } from "../../ioc";
 import { contracts } from "../../config";
-import { CkbUtils, DexOrderCellFormat } from "../../component";
+import { CkbUtils, DexOrderCellFormat, DexOrderData } from "../../component";
 import BestPriceModel from "./best_price_model";
 import { HashType } from '@ckb-lumos/base';
 import { DexRepository } from '../repository/dex_repository';
 import CkbRepository from '../repository/ckb_repository';
-
-
 
 @injectable()
 export default class OrdersService {
@@ -22,8 +20,9 @@ export default class OrdersService {
     type_code_hash: string,
     type_hash_type: string,
     type_args: string,
-  ): Promise<Array<DexOrderCellFormat>> {
-    const orderCells = await this.repository.collectCells({
+  ): Promise<Array<DexOrderData>> {
+
+    const cells = await this.repository.getPlaceOrder({
       type: {
         code_hash: type_code_hash,
         hash_type: <HashType>type_hash_type,
@@ -36,16 +35,12 @@ export default class OrdersService {
           args: "0x",
         },
         argsLen: 'any',
-      }
+      },
+      order: "desc"
     });
 
-    const REQUIRED_DATA_LENGTH = 84;
-    return CkbUtils.formatOrderCells(
-      orderCells
-        .filter(o => o.data.length === REQUIRED_DATA_LENGTH)
-        .sort((c1, c2) => parseInt(c1.block_number) - parseInt(c2.block_number))
-        .reverse()
-    );
+    return cells.sort((c1, c2) => c1.block_number - c2.block_number).reverse();
+
   }
 
   async getCurrentPrice(type: { code_hash: string, args: string, hash_type: HashType }): Promise<string> {
@@ -137,4 +132,7 @@ export default class OrdersService {
       return true;
     }
   }
+
 }
+
+

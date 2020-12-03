@@ -7,4 +7,9 @@ export interface IndexerService {
     getLastMatchOrders(
         type: Script
     ): Promise<Record<'ask_orders' | 'bid_orders', Array<DexOrderData> | null>>
+
+    tip(): Promise<number>;
+
+    getPlaceOrder(queryOptions: QueryOptions): Promise<Array<DexOrderData>>;
+   
 }
