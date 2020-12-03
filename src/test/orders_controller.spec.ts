@@ -31,6 +31,7 @@ describe('Orders controller', () => {
   let mock_cell;
   let mock_transaction;
   let mock_last_match_orders;
+  let mock_get_place_order;
 
   beforeEach(() => {
     orders = [
@@ -188,7 +189,7 @@ describe('Orders controller', () => {
     mock_cell = sinon.stub(mock, 'collectCells');  
     mock_transaction = sinon.stub(mock, 'collectTransactions');  
     mock_last_match_orders = sinon.stub(mock, 'getLastMatchOrders');
-    // mock_query_block_time_by_hash = sinon.stub(mock, 'getBlockTimestampByHash');
+    mock_get_place_order = sinon.stub(mock, 'getPlaceOrder');
     
 
     
@@ -1100,7 +1101,7 @@ describe('Orders controller', () => {
       req.query.type_code_hash = TYPE_SCRIPT.code_hash
       req.query.type_hash_type = TYPE_SCRIPT.hash_type
       req.query.type_args = TYPE_SCRIPT.args;
-      mock_cell.resolves(orders)
+      mock_get_place_order.resolves(orders)
     })
 
     it('should return bid orders and ask orders', async () => {
