@@ -162,7 +162,7 @@ export default class OrdersService {
   }
 
   isInvalidOrderCell(cell: DexOrderCellFormat): boolean {
-    const orderCellMinCapacity = new BigNumber(18700000000);
+    const orderCellMinCapacity = new BigNumber(CkbUtils.getOrderCellCapacitySize().toString());
     const capacityBN = new BigNumber(cell.rawData.cell_output.capacity);
     const sudtAmountBN = new BigNumber(cell.sUDTAmount);
     const orderAmountBN = new BigNumber(cell.orderAmount);

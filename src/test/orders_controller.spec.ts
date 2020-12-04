@@ -225,7 +225,7 @@ describe('Orders controller', () => {
       const fakeOrders = [
         {
           cell_output: {
-            capacity: `0x${BigInt(18700000000n).toString(16)}`,
+            capacity: `0x${BigInt(CkbUtils.getOrderCellCapacitySize()).toString(16)}`,
             lock: {
               code_hash: '0x04878826e4bf143a93eb33cb298a46f96e4014533d98865983e048712da65160',
               hash_type: 'data',
@@ -247,7 +247,7 @@ describe('Orders controller', () => {
         },
         {
           cell_output: {
-            capacity: `0x${BigInt(18700000000n).toString(16)}`,
+            capacity: `0x${BigInt(CkbUtils.getOrderCellCapacitySize()).toString(16)}`,
             lock: {
               code_hash: '0x04878826e4bf143a93eb33cb298a46f96e4014533d98865983e048712da65160',
               hash_type: 'data',
@@ -276,8 +276,8 @@ describe('Orders controller', () => {
       };
 
       describe('when query for best price for bid order', () => {
-        const insufficientCapacity = BigInt(1870000000n);
-        const sufficientCapacity = BigInt(18700000000n);
+        const insufficientCapacity = BigInt(CkbUtils.getOrderCellCapacitySize());
+        const sufficientCapacity = BigInt(CkbUtils.getOrderCellCapacitySize());
         const validOrderData = CkbUtils.formatOrderData(BigInt(25075 * 10 ** 5), BigInt(5 * 10 ** 9), BigInt(2 * 10 ** 10), false);
         const invalidOrderData = CkbUtils.formatOrderData(BigInt(2 * 10 ** 10), BigInt(4 * 10 ** 9), BigInt(2 * 10 ** 9), false);
         const fakeOrders = [
@@ -317,7 +317,7 @@ describe('Orders controller', () => {
       describe('when query for best price for ask order', () => {
         const orderAmount = BigInt(5 * 10 ** 9);
         const price = 2n;
-        const sufficientCapacity = (BigInt(orderAmount * price) * BigInt(1003)) / BigInt(1000) + 18700000000n;
+        const sufficientCapacity = (BigInt(orderAmount * price) * BigInt(1003)) / BigInt(1000) + CkbUtils.getOrderCellCapacitySize();
         const insufficientCapacity = sufficientCapacity - 2n;
         const fakeOrders = [
           {
