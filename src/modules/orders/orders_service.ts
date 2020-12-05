@@ -20,6 +20,7 @@ export default class OrdersService {
     type_code_hash: string,
     type_hash_type: string,
     type_args: string,
+    precision: string,
   ): Promise<{
     bid_orders: {receive: string, price: string}[],
     ask_orders: {receive: string, price: string}[]
@@ -56,7 +57,6 @@ export default class OrdersService {
       }
     }) 
 
-
     const bid_orders = 
     bidOrderPriceKeys.sort((c1, c2) => parseInt(c1) - parseInt(c2))
       .reverse()
@@ -72,9 +72,20 @@ export default class OrdersService {
       }) 
 
     const dexOrdersAsk = this.filterDexOrder(orderCells, false)
-      .sort((c1, c2) => parseInt(c1.price) - parseInt(c2.price))
+      .sort((c1, c2) => parseInt(c1.price) - parseInt(c2.price))      
 
-    const groupbyPriceAsk = this.groupbyPrice(dexOrdersAsk)
+    const groupbyPriceAsk: Map<string, DexOrderCellFormat[]> = new Map();
+    this.groupbyPrice(dexOrdersAsk).forEach((value, key) => {
+      const price = new BigNumber(key).div(precision);
+      const orderAmount = value.map(x => x.orderAmount).reduce((a1, a2) => a1 + a2);
+      const pay = new BigNumber(orderAmount).div(price);
+      
+      if(!(pay.div(100000000).toNumber() < 0.0001)) {
+        groupbyPriceAsk.set(key, value);
+      }
+      
+    });
+
     const askOrderPriceMergeKeys: Set<string> = new Set()
     const askOrderPriceKeys: string[] = []
     dexOrdersAsk.forEach(x => {
@@ -204,7 +215,7 @@ export default class OrdersService {
       .filter(x => x.orderAmount !== '0')
   }
 
-  groupbyPrice(dexOrders: DexOrderCellFormat[]):Map<string, DexOrderCellFormat[]> {  
+  groupbyPrice(dexOrders: DexOrderCellFormat[]): Map<string, DexOrderCellFormat[]> {
     const groupbyPrice: Map<string, DexOrderCellFormat[]> = new Map()
     for(let i = 0; i < dexOrders.length; i++) {
       const dexOrder = dexOrders[i];
@@ -219,8 +230,6 @@ export default class OrdersService {
 
     return groupbyPrice;
   }
-
-  
 }
 
 
