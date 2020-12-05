@@ -54,8 +54,8 @@ export default class OrderController {
           required: true,
           description: "",
         },
-        precision: {
-          name: "precision",
+        decimal: {
+          name: "decimal",
           type: "string",
           required: true,
           description: "",
@@ -77,14 +77,14 @@ export default class OrderController {
       type_code_hash,
       type_hash_type,
       type_args,
-      precision,
+      decimal,
     } = req.query;
     try {
       const orders = await this.orderService.getOrders(
         <string>type_code_hash,
         <string>type_hash_type,
         <string>type_args,
-        <string>precision,
+        <string>decimal,
       );
       res.status(200).json(orders)
 
