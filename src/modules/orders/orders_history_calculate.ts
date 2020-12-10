@@ -1,5 +1,4 @@
 import { Input, OutPoint, Output, Script, Transaction } from "@ckb-lumos/base";
-import BigNumber from 'bignumber.js';
 
 import {
   CkbUtils,
@@ -114,12 +113,7 @@ export default class OrdersHistoryCalculate {
         firstOrderCellData.orderAmount - lastOrderCellData.orderAmount;
       let turnoverRate;
       try {
-        turnoverRate = new BigNumber(tradedAmount.toString()).multipliedBy(100).div(firstOrderCellData.orderAmount.toString()).div(100);
-        if(turnoverRate.toFixed(3, 1) === '0.999') {
-          turnoverRate = 1;
-        } else {
-          turnoverRate = turnoverRate.toFixed(2, 1)
-        }
+        turnoverRate = Number((tradedAmount * 100n) / firstOrderCellData.orderAmount) / 100;
       } catch (error) {
         console.error("zero order amount for the  first order cell");
         turnoverRate = 0;
@@ -149,7 +143,7 @@ export default class OrdersHistoryCalculate {
       const isLive = !this.txsByInputOutPoint.get(inputOutPoint);
 
       let status;
-      if (orderHistory.turnover_rate === '1.00') {
+      if (orderHistory.turnover_rate === 1) {
         status = "completed";
         if (!isLive) {
           status = "claimed";
