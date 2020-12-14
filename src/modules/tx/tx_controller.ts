@@ -208,19 +208,19 @@ export default class TxController {
         type_code_hash: {
           name: "type_code_hash",
           type: "string",
-          required: false,
+          required: true,
           description: "",
         },
         type_hash_type: {
           name: "type_hash_type",
           type: "string",
-          required: false,
+          required: true,
           description: "",
         },
         type_args: {
           name: "type_args",
           type: "string",
-          required: false,
+          required: true,
           description: "",
         },
         lock_code_hash: {

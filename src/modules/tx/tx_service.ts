@@ -170,8 +170,8 @@ export default class TxService {
 
       const blockNumber = await this.repository.getblockNumberByBlockHash(tx.ckbTransactionWithStatus.txStatus.blockHash);
 
-      const from = tx.getFromAddress(inputTransactions);
-      const to = tx.getToAddress(inputTransactions);
+      const from = tx.getFromAddress(lock);
+      const to = tx.getToAddress(lock);
 
       const details: TransactionDetailsModel = {
         status: tx.ckbTransactionWithStatus.txStatus.status,

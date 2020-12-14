@@ -25,8 +25,8 @@ export default class CkbService {
     const inputTxs = await this.ckbNode.rpc
       .createBatchRequest([["getTransaction", txHash]])
       .exec();
-  
-    if(!inputTxs || inputTxs[0] === undefined) {
+      
+    if(!inputTxs) {
       return null;
     }
 

@@ -27,7 +27,6 @@ indexer_data_dev
 
 ### env ###
 .env
-env
 
 ### vscode ###
 .vscode
