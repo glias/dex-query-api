@@ -91,7 +91,7 @@ export default class OrdersService {
     const bid_orders = 
     bidOrderPriceKeys.sort((c1, c2) => parseInt(c1) - parseInt(c2))
       .reverse()
-      .slice(0, bidOrderPriceKeys.length > 7 ? 7 : bidOrderPriceKeys.length).map(x => {
+      .slice(0, bidOrderPriceKeys.length > CkbUtils.getOrdersLimit() ? CkbUtils.getOrdersLimit() : bidOrderPriceKeys.length).map(x => {
         let order_amount = BigInt(0); 
         groupbyPriceBid.get(x).forEach(x => order_amount += BigInt(x.orderAmount))
   
@@ -122,7 +122,7 @@ export default class OrdersService {
   
     const ask_orders =
     askOrderPriceKeys.sort((c1, c2) => parseInt(c1) - parseInt(c2))
-      .slice(0, askOrderPriceKeys.length > 7 ? 7 : askOrderPriceKeys.length).map(x => {
+      .slice(0, askOrderPriceKeys.length > CkbUtils.getOrdersLimit() ? CkbUtils.getOrdersLimit() : askOrderPriceKeys.length).map(x => {
         let order_amount = BigInt(0); 
         groupbyPriceAsk.get(x).forEach(x => order_amount += BigInt(x.orderAmount))
 
