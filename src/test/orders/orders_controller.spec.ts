@@ -1020,7 +1020,7 @@ describe('Orders controller', () => {
           await controller.getOrders(req, res, next);
           res.status.should.have.been.calledWith(200);
           res.json.should.have.been.calledWith({
-            ask_orders: [{ price: "100000000000000", receive: "236944947979" }, { price: "98760000000000", receive: "296280000" }, { price: "43210000000000", receive: "1" }],
+            ask_orders: [{ price: "43210000000000", receive: "1" }, { price: "98760000000000", receive: "296280000" }, { price: "100000000000000", receive: "236944947979" }],
             bid_orders: [{ price: "100000000000000", receive: "506879" }, { price: "40000000000000", receive: "250000000000000000" }]
           });
         }) 
