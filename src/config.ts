@@ -9,7 +9,6 @@ export const indexer_config = {
 
 interface Contracts {
   orderLock: Script & { version: number };
-  sudtType: Script;
 }
 
 interface Script {
@@ -22,10 +21,6 @@ export const contracts: Contracts = {
     codeHash: process.env.ORDER_LOCK_CODE_HASH || "0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d",
     hashType: <HashType>(process.env.ORDER_LOCK_HASH_TYPE || "type"),
     version: 1,
-  },
-  sudtType: {
-    codeHash: process.env.SUDT_TYPE_CODE_HASH,
-    hashType: <HashType>(process.env.SUDT_TYPE_HASH_TYPE || "type"),
   },
 };
 

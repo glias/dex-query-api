@@ -4,7 +4,7 @@ import { contracts } from '../config';
 
 export interface DexOrderData {
   sUDTAmount: bigint;
-  version: bigint;
+  version: string;
   orderAmount: bigint;
   effect: bigint,
   exponent: number,
@@ -25,26 +25,26 @@ export interface DexOrderCellFormat {
 
 export class CkbUtils {
   static parseOrderData(hex: HexString): DexOrderData {
-    const sUDTAmount = this.parseAmountFromLeHex(hex.slice(0, 34));
+    const sUDTAmount = CkbUtils.parseAmountFromLeHex(hex.slice(0, 34));
 
-    const versionBuf: Buffer = Buffer.from(hex.slice(34, 50), "hex");
-    const version = versionBuf.readBigUInt64LE();
+    const versionBuf: Buffer = Buffer.from(hex.slice(34, 36), "hex");
+    const version = versionBuf.readUInt8()
     
-    const orderAmount = this.parseAmountFromLeHex(hex.slice(50, 82));
+    const orderAmount = CkbUtils.parseAmountFromLeHex(hex.slice(36, 68));
   
-    const effectBuf: Buffer = Buffer.from(hex.slice(82, 98), "hex");
+    const effectBuf: Buffer = Buffer.from(hex.slice(68, 84), "hex");
     const effect = effectBuf.readBigUInt64LE();
   
-    const exponentBuf: Buffer = Buffer.from(hex.slice(98, 100), "hex");
+    const exponentBuf: Buffer = Buffer.from(hex.slice(84, 86), "hex");
     const exponent = exponentBuf.readInt8();
   
-    const isBid = hex.slice(100, 102) === "00";
+    const isBid = hex.slice(86, 88) === "00";
 
-    const price = this.getPrice(effect, exponent);
+    const price = CkbUtils.getPrice(effect, exponent);
   
     const orderData = {
       sUDTAmount,
-      version,
+      version: version.toString(),
       orderAmount,
       effect,
       exponent,

@@ -1,12 +1,11 @@
 import CellsSerive from "../cells/cells_service";
 import BigNumber from "bignumber.js";
 import { Address, Amount, AmountUnit, Builder, Cell, RawTransaction, Script, Transaction } from "@lay2/pw-core";
-import { CKB_MIN_CAPACITY, COMMISSION_FEE, MAX_TRANSACTION_FEE, ORDER_CELL_CAPACITY } from '../../constant/number'
+import { CKB_MIN_CAPACITY, MAX_TRANSACTION_FEE, ORDER_CELL_CAPACITY } from '../../constant/number'
 import { SUDT_DEP } from "../../constant/script";
 import { CkbUtils } from "../../component";
 import PlaceOrder from './place_order'
 import { OutPoint as LumosOutPoint  } from '@ckb-lumos/base';
-import CkbRequestModel from "../../model/req/ckb_request_model";
 
 export default class PlaceBidOrder extends PlaceOrder {
   protected cellService: CellsSerive
@@ -17,11 +16,9 @@ export default class PlaceBidOrder extends PlaceOrder {
   protected inputLock: Script
   protected pay: string
   protected price: string
-  protected totalPay: BigNumber
+  protected actualPay: BigNumber
   protected sudtDecimal: number
-  protected ckbRequestModel: CkbRequestModel
   protected spentCells?: Array<LumosOutPoint>
-
 
   constructor(
     pay: string,
@@ -31,10 +28,8 @@ export default class PlaceBidOrder extends PlaceOrder {
     balance: string,
     address: string,
     sudtArgs: string,
-    ckbRequestModel: CkbRequestModel,
     spentCells?: Array<LumosOutPoint>
   ) {
-
     super(
       pay,
       price,
@@ -43,10 +38,8 @@ export default class PlaceBidOrder extends PlaceOrder {
       balance,
       address,
       sudtArgs,
-      ckbRequestModel,
       spentCells
     )
-    this.totalPay = new BigNumber(pay).times(1 + COMMISSION_FEE)
   }
 
   static calcBidReceive(pay: string, price: string, decimal: number): string {
@@ -66,24 +59,26 @@ export default class PlaceBidOrder extends PlaceOrder {
   }
 
   async placeOrder(): Promise<Transaction> {
-    const minCapacity = this.totalPay
+    const minCapacity = new BigNumber(this.pay)
       .plus(ORDER_CELL_CAPACITY) // 181
       .plus(MAX_TRANSACTION_FEE) // 0.1
       .times(10 ** AmountUnit.ckb)
 
-    const minKeepChangeCapacity = this.totalPay
+    const minKeepChangeCapacity = new BigNumber(this.pay)
       .plus(ORDER_CELL_CAPACITY) // 181
       .plus(CKB_MIN_CAPACITY) // 61
       .plus(MAX_TRANSACTION_FEE) // 0.1
       .times(10 ** AmountUnit.ckb)
 
-    if (minKeepChangeCapacity.gte(this.balance)) {
+    if (minKeepChangeCapacity.lte(this.balance)) {
       return this.placeBidOrderWithChange(minKeepChangeCapacity)
     }
 
-    if (minCapacity.gte(this.balance)) {
+    if (minCapacity.lte(this.balance)) {
       return this.placeBidOrderWithoutChange(minCapacity)
     }
+
+    throw new Error('CKB balance is not enough.')
   }
 
   async placeBidOrderWithoutChange(
@@ -92,24 +87,16 @@ export default class PlaceBidOrder extends PlaceOrder {
     let inputCapacity = new BigNumber(0)
     const inputs: Cell[] = []
 
-    const cells = await this.cellService.getLiveCellsForAmount(
-      PlaceOrder.buildCellsAmountRequestModel(
-        this.ckbRequestModel,
-        neededCapacity.toFixed(0, BigNumber.ROUND_DOWN),
-        undefined,
-        this.spentCells,
-      )
-    )
+    const cells = await this.collect(neededCapacity.toFixed(0, BigNumber.ROUND_DOWN))
 
     if (cells.length === 0) {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
-    cells.forEach(lumosCell => {
+    cells.forEach(cell => {
       if (inputCapacity.lte(neededCapacity)) {
-        const cell = PlaceOrder.fromLumosCell(lumosCell)
         inputs.push(cell)
-        inputCapacity = inputCapacity.plus(cell.capacity.toString())
+        inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
       }
     })
 
@@ -119,7 +106,7 @@ export default class PlaceBidOrder extends PlaceOrder {
       this.sudtType,
     )
 
-    const receive = PlaceBidOrder.calcBidReceive(this.pay, this.price, this.sudtDecimal)
+    const receive = PlaceBidOrder.calcBidReceive(this.actualPay.toString(), this.price, this.sudtDecimal)
     orderOutput.setHexData(PlaceBidOrder.buildBidData(receive, this.price, this.sudtDecimal))
 
     const outputs: Cell[] = [orderOutput]
@@ -129,6 +116,7 @@ export default class PlaceBidOrder extends PlaceOrder {
     tx.raw.cellDeps.push(SUDT_DEP)
 
     const fee = Builder.calcFee(tx)
+
     orderOutput.capacity = orderOutput.capacity.sub(fee)
     tx.raw.outputs.pop()
     tx.raw.outputs.push(orderOutput)
@@ -142,24 +130,16 @@ export default class PlaceBidOrder extends PlaceOrder {
     let inputCapacity = new BigNumber(0)
     const inputs: Cell[] = []
 
-    const cells = await this.cellService.getLiveCellsForAmount(
-      PlaceOrder.buildCellsAmountRequestModel(
-        this.ckbRequestModel,
-        neededCapacity.toFixed(0, BigNumber.ROUND_DOWN),
-        undefined,
-        this.spentCells,
-      )
-    )
+    const cells = await this.collect(neededCapacity.toFixed(0, BigNumber.ROUND_DOWN))
 
     if (cells.length === 0) {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
-    cells.forEach(lumosCell => {
+    cells.forEach(cell => {
       if (inputCapacity.lte(neededCapacity)) {
-        const cell = PlaceOrder.fromLumosCell(lumosCell)
         inputs.push(cell)
-        inputCapacity = inputCapacity.plus(cell.capacity.toString())
+        inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
       }
     })
 
@@ -189,10 +169,11 @@ export default class PlaceBidOrder extends PlaceOrder {
     tx.raw.cellDeps.push(SUDT_DEP)
 
     const fee = Builder.calcFee(tx)
+
     changeOutput.capacity = changeOutput.capacity.sub(fee)
     tx.raw.outputs.pop()
     tx.raw.outputs.push(changeOutput)
-
+    
     return tx
   }
 }

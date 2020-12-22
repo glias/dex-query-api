@@ -4,8 +4,7 @@ import { contracts } from "../../config";
 import { Address, AddressType, Amount, AmountUnit, Cell, OutPoint, Script } from "@lay2/pw-core";
 import { COMMISSION_FEE } from '../../constant/number'
 import { Cell as LumosCell, OutPoint as LumosOutPoint  } from '@ckb-lumos/base';
-import CkbRequestModel from "../../model/req/ckb_request_model";
-import CellsAmountRequestModel from "../cells/cells_amount_request_model";
+import { SUDT_TYPE_SCRIPT } from "../../constant/script";
 
 export default class PlaceOrder {
   protected cellService: CellsSerive
@@ -16,9 +15,8 @@ export default class PlaceOrder {
   protected inputLock: Script
   protected pay: string
   protected price: string
-  protected totalPay: BigNumber
+  protected actualPay: BigNumber
   protected sudtDecimal: number
-  protected ckbRequestModel: CkbRequestModel
   protected spentCells?: Array<LumosOutPoint>
 
   constructor(
@@ -29,7 +27,6 @@ export default class PlaceOrder {
     balance: string,
     address: string,
     sudtArgs: string,
-    ckbRequestModel: CkbRequestModel,
     spentCells?: Array<LumosOutPoint>
   ) {
     this.cellService = cellService
@@ -41,17 +38,16 @@ export default class PlaceOrder {
     this.pay = pay
     this.price = price
     this.sudtDecimal = sudtDecimal
-    this.totalPay = new BigNumber(pay).times(1 + COMMISSION_FEE)
-    this.ckbRequestModel = ckbRequestModel
+    this.actualPay = new BigNumber(pay).times(1 + COMMISSION_FEE)
     this.spentCells = spentCells
   }
 
   static buildSUDTTypeScript(typeArgs: string): Script {
     return new Script(
-      contracts.sudtType.codeHash,
+      SUDT_TYPE_SCRIPT.codeHash,
       typeArgs,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      contracts.sudtType.hashType as any,
+      SUDT_TYPE_SCRIPT.hashType as any,
     )
   }
 
@@ -64,6 +60,35 @@ export default class PlaceOrder {
     )
   }
 
+  async collect(neededCapacity: string): Promise<Cell[]> {
+    const lock = this.address.toLockScript()
+    const cells = await this.cellService.getLiveCellsForAmount({
+      spent_cells: this.spentCells,
+      lock_args: lock.args,
+      lock_code_hash: lock.codeHash,
+      lock_hash_type: lock.hashType,
+      ckb_amount: neededCapacity,
+    })
+
+    return cells.map(PlaceOrder.fromLumosCell)
+  }
+
+  async collectSUDT(sudtAmount: string): Promise<Cell[]> {
+    const lock = this.address.toLockScript()
+    const type = this.sudtType
+    const cells = await this.cellService.getLiveCellsForAmount({
+      spent_cells: this.spentCells,
+      lock_args: lock.args,
+      lock_code_hash: lock.codeHash,
+      lock_hash_type: lock.hashType,
+      type_args: type.args,
+      type_code_hash: type.codeHash,
+      type_hash_type: type.hashType,
+      sudt_amount: sudtAmount,
+    })
+
+    return cells.map(PlaceOrder.fromLumosCell)
+  }
 
   static buildPriceData(price: string, decimal: number): string {
     const realPrice = new BigNumber(price).times(10 ** (AmountUnit.ckb - decimal))
@@ -75,10 +100,11 @@ export default class PlaceOrder {
       exponent -= offset.length
     }
 
-    const buf = Buffer.allocUnsafe(9)
-    buf.writeBigInt64BE(BigInt(effect), 0) // u64
-    buf.writeInt8(exponent, 8) // i8
-    return buf.toString('hex')
+    const effectBuf = Buffer.allocUnsafe(8) // u64
+    effectBuf.writeBigInt64LE(BigInt(effect), 0)
+    const exponentBuf = Buffer.allocUnsafe(1) // i8
+    exponentBuf.writeInt8(exponent)
+    return effectBuf.toString('hex') + exponentBuf.toString('hex')
   }
 
   static buildVersionData(): string {
@@ -102,30 +128,5 @@ export default class PlaceOrder {
       new OutPoint(tx_hash, index),
       data,
     )
-  }
-
-  static buildCkbRequstModel(typeArgs: string, lockArgs: string): CkbRequestModel {
-    return CkbRequestModel.buildReqParam(
-      contracts.sudtType.codeHash,
-      contracts.sudtType.hashType,
-      typeArgs,
-      contracts.orderLock.codeHash,
-      contracts.sudtType.hashType,
-      lockArgs,
-    )
-  }
-
-  static buildCellsAmountRequestModel(
-    ckbRequestModel: CkbRequestModel,
-    ckbAmount?: string,
-    sudtAmount?: string,
-    spentCells?: Array<LumosOutPoint>
-  ): CellsAmountRequestModel {
-    return {
-      ...ckbRequestModel,
-      spent_cells: spentCells,
-      ckb_amount: ckbAmount,
-      sudt_amount: sudtAmount,
-    }
   }
 }

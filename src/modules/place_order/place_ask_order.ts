@@ -6,8 +6,6 @@ import { SUDT_DEP } from "../../constant/script";
 import { CkbUtils } from "../../component";
 import PlaceOrder from './place_order'
 import { OutPoint as LumosOutPoint  } from '@ckb-lumos/base';
-import CkbRequestModel from "../../model/req/ckb_request_model";
-
 
 export default class PlaceAskOrder extends PlaceOrder {
   protected cellService: CellsSerive
@@ -18,9 +16,8 @@ export default class PlaceAskOrder extends PlaceOrder {
   protected inputLock: Script
   protected pay: string
   protected price: string
-  protected totalPay: BigNumber
+  protected actualPay: BigNumber
   protected sudtDecimal: number
-  protected ckbRequestModel: CkbRequestModel
   protected spentCells?: Array<LumosOutPoint>
 
   constructor(
@@ -31,7 +28,6 @@ export default class PlaceAskOrder extends PlaceOrder {
     balance: string,
     address: string,
     sudtArgs: string,
-    ckbRequestModel: CkbRequestModel,
     spentCells?: Array<LumosOutPoint>
   ) {
     super(
@@ -42,7 +38,6 @@ export default class PlaceAskOrder extends PlaceOrder {
       balance,
       address,
       sudtArgs,
-      ckbRequestModel,
       spentCells
     )
   }
@@ -65,15 +60,15 @@ export default class PlaceAskOrder extends PlaceOrder {
       .plus(MAX_TRANSACTION_FEE) // 0.1
       .times(10 ** AmountUnit.ckb)
 
-    if (minKeepBothChangeCapacity.gte(this.balance)) {
+    if (minKeepBothChangeCapacity.lte(this.balance)) {
       return this.placeOrderWithChange(minKeepBothChangeCapacity, true)
     }
 
-    if (minKeepSudtChangeCapacity.gte(this.balance)) {
+    if (minKeepSudtChangeCapacity.lte(this.balance)) {
       return this.placeOrderWithChange(minKeepSudtChangeCapacity, false)
     }
 
-    if (minCapacity.gte(this.balance)) {
+    if (minCapacity.lte(this.balance)) {
       return this.placeOrderWithoutChange(minCapacity)
     }
 
@@ -86,40 +81,25 @@ export default class PlaceAskOrder extends PlaceOrder {
 
     const inputs: Cell[] = []
 
-    const cells = await this.cellService.getLiveCellsForAmount(
-      PlaceOrder.buildCellsAmountRequestModel(
-        this.ckbRequestModel,
-        undefined,
-        this.totalPay.times(10 ** this.sudtDecimal).toFixed(0, 1),
-        this.spentCells,
-      )
-    )
+    const cells = await this.collectSUDT(new BigNumber(this.pay).times(10 ** this.sudtDecimal).toFixed(0, 1))
 
-    cells.forEach(lumosCell => {
-      const cell = PlaceOrder.fromLumosCell(lumosCell)
+    cells.forEach(cell => {
       sudtAmount = sudtAmount.plus(cell.getSUDTAmount().toBigInt().toString())
       inputs.push(cell)
-      inputCapacity = inputCapacity.plus(cell.capacity.toString())
+      inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
     })
 
-    if (sudtAmount.lt(this.totalPay)) {
+    if (sudtAmount.lt(this.pay)) {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
     if (inputCapacity.lt(neededCapacity)) {
-      const extraCells = await this.cellService.getLiveCellsForAmount(
-        PlaceAskOrder.buildCellsAmountRequestModel(
-          this.ckbRequestModel,
-          undefined,
-          neededCapacity.minus(inputCapacity).toString(),
-        )
-      )
+      const extraCells = await this.collect(neededCapacity.minus(inputCapacity).toString())
 
-      extraCells.forEach(lumosCell => {
-        const cell = PlaceOrder.fromLumosCell(lumosCell)
+      extraCells.forEach(cell => {
         if (inputCapacity.lte(neededCapacity)) {
           inputs.push(cell)
-          inputCapacity = inputCapacity.plus(cell.capacity.toString())
+          inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
         }
       })
     }
@@ -128,14 +108,14 @@ export default class PlaceAskOrder extends PlaceOrder {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
-    const receive = PlaceAskOrder.calcAskReceive(this.pay, this.price)
+    const receive = PlaceAskOrder.calcAskReceive(this.actualPay.toString(), this.price)
 
     const orderOutput = new Cell(
       new Amount(ORDER_CELL_CAPACITY.toString(), AmountUnit.ckb),
       this.orderLock,
       this.sudtType,
     )
-    orderOutput.setHexData(PlaceAskOrder.buildAskData(this.totalPay.toString(), receive, this.price, this.sudtDecimal))
+    orderOutput.setHexData(PlaceAskOrder.buildAskData(this.actualPay.toString(), receive, this.price, this.sudtDecimal))
 
     const sudtChangeAmount = keepBothChange
       ? new Amount(SUDT_MIN_CAPACITY.toString(), AmountUnit.ckb)
@@ -149,7 +129,7 @@ export default class PlaceAskOrder extends PlaceOrder {
 
     sudtChangeOutput.setHexData(
       CkbUtils.formatBigUInt128LE(BigInt(
-        sudtAmount.minus(this.totalPay.times(10 ** this.sudtDecimal).toFixed(0, 1))
+        sudtAmount.minus(this.actualPay.times(10 ** this.sudtDecimal).toFixed(0, 1))
       ))
     )
 
@@ -189,41 +169,25 @@ export default class PlaceAskOrder extends PlaceOrder {
 
     const inputs: Cell[] = []
 
-    const cells = await this.cellService.getLiveCellsForAmount(
-      PlaceOrder.buildCellsAmountRequestModel(
-        this.ckbRequestModel,
-        undefined,
-        this.totalPay.times(10 ** this.sudtDecimal).toFixed(0, 1),
-        this.spentCells,
-      )
-    )
+    const cells = await this.collectSUDT(new BigNumber(this.pay).times(10 ** this.sudtDecimal).toFixed(0, 1))
 
-    cells.forEach(lumosCell => {
-      const cell = PlaceOrder.fromLumosCell(lumosCell)
+    cells.forEach(cell => {
       sudtAmount = sudtAmount.plus(cell.getSUDTAmount().toBigInt().toString())
       inputs.push(cell)
-      inputCapacity = inputCapacity.plus(cell.capacity.toString())
+      inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
     })
 
-    if (sudtAmount.lt(this.totalPay)) {
+    if (sudtAmount.lt(this.pay)) {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
     if (inputCapacity.lt(neededCapacity)) {
-      const extraCells = await this.cellService.getLiveCellsForAmount(
-        PlaceOrder.buildCellsAmountRequestModel(
-          this.ckbRequestModel,
-          undefined,
-          neededCapacity.minus(inputCapacity).toString(),
-          this.spentCells,
-        )
-      )
+      const extraCells = await this.collect(neededCapacity.minus(inputCapacity).toString())
 
-      extraCells.forEach(lumosCell => {
-        const cell = PlaceOrder.fromLumosCell(lumosCell)
+      extraCells.forEach(cell => {
         if (inputCapacity.lte(neededCapacity)) {
           inputs.push(cell)
-          inputCapacity = inputCapacity.plus(cell.capacity.toString())
+          inputCapacity = inputCapacity.plus(cell.capacity.toHexString())
         }
       })
     }
@@ -232,7 +196,7 @@ export default class PlaceAskOrder extends PlaceOrder {
       throw new Error(`You don't have enough live cells to complete this transaction, please wait for other transactions to be completed.`);
     }
 
-    const receive = PlaceAskOrder.calcAskReceive(this.pay, this.price)
+    const receive = PlaceAskOrder.calcAskReceive(this.actualPay.toString(), this.price)
 
     const orderOutput = new Cell(
       new Amount(inputCapacity.toString(), AmountUnit.shannon),
