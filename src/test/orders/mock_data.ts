@@ -26,8 +26,8 @@ export const dexOrderTransactions = [
         capacity: `0x${18700000000n.toString(16)}`,
         lock: {
           args: '0x9eb946551d1eed6aad1b186af975af8ddb2d5043a30d28b6228e6b66d4f3521a',
-          code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-          hash_type: 'type'
+          code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+          hash_type: 'data'
         },
         type: {
           args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -58,8 +58,8 @@ export const dexOrderTransactions = [
         type: null
       } ],
       outputs_data: [
-        CkbUtils.formatOrderData(300900000000000000n, 1n, 300000000000n, 100000000000000n, 0, false),
-        CkbUtils.formatOrderData(57836558651830568n, 1n, 38821799640843962n, 38821799640843962n, 0, false),
+        CkbUtils.formatOrderData(300900000000000000n, 1, 300000000000n, 100000000000000n, 0, false),
+        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 38821799640843962n, 0, false),
         '0x'
       ],
       version: '0x0',
@@ -119,8 +119,8 @@ export const dexOrderTransactions = [
           capacity: `0x${61909999999n.toString(16)}`,
           lock: {
             args: '0x9eb946551d1eed6aad1b186af975af8ddb2d5043a30d28b6228e6b66d4f3521a',
-            code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-            hash_type: 'type'
+            code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+            hash_type: 'data'
           },
           type: {
             args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -132,8 +132,8 @@ export const dexOrderTransactions = [
           capacity: `0x${35886352825n.toString(16)}`,
           lock: {
             args: '0x9eb946551d1eed6aad1b186af975af8ddb2d5043a30d28b6228e6b66d4f3521a',
-            code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-            hash_type: 'type'
+            code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+            hash_type: 'data'
           },
           type: {
             args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -145,8 +145,8 @@ export const dexOrderTransactions = [
           capacity: `0x${81755052021n.toString(16)}`,
           lock: {
             args: '0x9eb946551d1eed6aad1b186af975af8ddb2d5043a30d28b6228e6b66d4f3521a',
-            code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-            hash_type: 'type'
+            code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+            hash_type: 'data'
           },
           type: {
             args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -156,10 +156,10 @@ export const dexOrderTransactions = [
         }
       ],
       outputs_data: [
-        CkbUtils.formatOrderData(370199999998479n, 1n, 0n, 0n, 0, false),
-        CkbUtils.formatOrderData(39774017177571400n, 1n, 1n, 43210000000000n, 0, false),
-        CkbUtils.formatOrderData(123399999999493121n, 1n, 506879n, 100000000000000n, 0, true),
-        CkbUtils.formatOrderData(237655782822937000n, 1n, 236944947979n, 100000000000000n, 0, false)
+        CkbUtils.formatOrderData(370199999998479n, 1, 0n, 0n, 0, false),
+        CkbUtils.formatOrderData(39774017177571400n, 1, 1n, 43210000000000n, 0, false),
+        CkbUtils.formatOrderData(123399999999493121n, 1, 506879n, 100000000000000n, 0, true),
+        CkbUtils.formatOrderData(237655782822937000n, 1, 236944947979n, 100000000000000n, 0, false)
       ],
       version: '0x0',
       witnesses: []
@@ -195,8 +195,8 @@ export const dexOrderTransactions = [
           capacity: `0x${18700000000n.toString(16)}`,
           lock: {
             args: '0x87a9ac1f2ccdfdc0fd5fc87d8239968176f9f3917a9b25935a28459992727b9c',
-            code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-            hash_type: 'type'
+            code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+            hash_type: 'data'
           },
           type: {
             args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -228,8 +228,8 @@ export const dexOrderTransactions = [
         }
       ],
       outputs_data: [
-        CkbUtils.formatOrderData(300900000000000n, 1n, 296280000n, 98760000000000n, 0, false),
-        CkbUtils.formatOrderData(57836558651830568n, 1n, 38821799640843962n, 38821799640843962n, 0, false),
+        CkbUtils.formatOrderData(300900000000000n, 1, 296280000n, 98760000000000n, 0, false),
+        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 38821799640843962n, 0, false),
         '0x'
       ],
       version: '0x0',
@@ -259,8 +259,8 @@ export const dexOrderTransactions = [
           capacity: `0x${11900000000000n.toString(16)}`,
           lock: {
             args: '0xa02332efd9363b1dbc87458c4064602aee5c61a3167d281fba50abc64466f614',
-            code_hash: '0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d',
-            hash_type: 'type'
+            code_hash: '0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf',
+            hash_type: 'data'
           },
           type: {
             args: '0xe7dd2956717c180e727cc0948cdc3275f247c18b7592b39adcebc0d0e1a906bb',
@@ -279,7 +279,7 @@ export const dexOrderTransactions = [
         }
       ],
       outputs_data: [
-        CkbUtils.formatOrderData(0n, 1n, 2500000n, 400000n, 0, true),
+        CkbUtils.formatOrderData(0n, 1, 2500000n, 400000n, 0, true),
         '0x'
       ],
       version: '0x0',

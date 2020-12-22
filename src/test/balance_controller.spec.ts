@@ -81,7 +81,7 @@ describe('Balance controller', () => {
   const cellsWithOrderLock = [
     generateCell(30, null, orderLock, null),
     generateCell(40, '0x1111', orderLock, null),
-    generateCell(1, CkbUtils.formatOrderData(BigInt(20), BigInt(1), BigInt(1), BigInt(1), 0, true), orderLock, sudtType),
+    generateCell(1, CkbUtils.formatOrderData(BigInt(20), 1, BigInt(1), BigInt(1), 0, true), orderLock, sudtType),
     generateCell(1, '0x121', orderLock, sudtType),
   ];
 
