@@ -116,14 +116,14 @@ export class CkbUtils {
     return `0x${buf.toString("hex")}`;
   }
 
-  static formatOrderData(currentAmount: bigint, version: bigint, orderAmount: bigint, effect: bigint, exponent: number, isBid: boolean): string {
+  static formatOrderData(currentAmount: bigint, version: number, orderAmount: bigint, effect: bigint, exponent: number, isBid: boolean): string {
     const udtAmountHex = this.formatBigUInt128LE(currentAmount);
     if (isBid === undefined) {
       return udtAmountHex;
     }
 
-    const versionBuf = Buffer.alloc(8);
-    versionBuf.writeBigUInt64LE(version);
+    const versionBuf = Buffer.alloc(1);
+    versionBuf.writeUInt8(version);
     const versionHex = `${versionBuf.toString("hex")}`;
   
 
@@ -188,7 +188,7 @@ export class CkbUtils {
   }
 
   static getRequiredDataLength(): number {
-    return 102;
+    return 88;
   } 
 
   static getOrderCellCapacitySize(): bigint {

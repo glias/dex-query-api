@@ -58,9 +58,6 @@ export default class OrdersService {
 
     const factory: DexOrderChainFactory = new DexOrderChainFactory();
     const orders = factory.getOrderChains(lock, type, orderTxs);
-
-    console.log(orders);
-    
     const liveCells = orders.filter(x => x.getLiveCell() != null && Number(x.getTurnoverRate().toFixed(3, 1)) < 0.999 && this.isMakerCellValid(x))
       .map(x => {
         const c = x.getLiveCell();
@@ -145,9 +142,8 @@ export default class OrdersService {
       const output = live.cell;
       const { price, orderAmount, sUDTAmount, isBid } = CkbUtils.parseOrderData(live.data);
       const freeCapacity = BigInt(parseInt(output.capacity, 16)) - CkbUtils.getOrderCellCapacitySize();
-      const priceBigNumber = new BigNumber(price);
+      const priceBigNumber = new BigNumber(price);     
       if (isBid) {
-        
         const costAmount = new BigNumber(orderAmount.toString()).multipliedBy(priceBigNumber);
         const fee = costAmount.multipliedBy(FEE.toString()).div((FEE + FEE_RATIO).toString());    
 

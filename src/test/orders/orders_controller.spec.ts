@@ -61,7 +61,7 @@ describe('Orders controller', () => {
         args: orderLockArgs,
       },
       type: typeScript,
-      data: CkbUtils.formatOrderData(1n, 1n, 1n, price, 0, true)
+      data: CkbUtils.formatOrderData(1n, 1, 1n, price, 0, true)
     }
     const orderCell2 = {
       capacity: '0x0',
@@ -70,7 +70,7 @@ describe('Orders controller', () => {
         args: orderLockArgs,
       },
       type: typeScript,
-      data: CkbUtils.formatOrderData(2n, 1n, 0n, price, 0, true)
+      data: CkbUtils.formatOrderData(2n, 1, 0n, price, 0, true)
     }
 
     describe('completed order', () => {
@@ -234,7 +234,7 @@ describe('Orders controller', () => {
             args: orderLockArgs,
           },
           type: typeScript,
-          data: CkbUtils.formatOrderData(1n, 1n, 1n, price, 0, true)
+          data: CkbUtils.formatOrderData(1n, 1, 1n, price, 0, true)
         }
         const orderCell1_2 = {
           capacity: '0x1',
@@ -243,7 +243,7 @@ describe('Orders controller', () => {
             args: orderLockArgs,
           },
           type: typeScript,
-          data: CkbUtils.formatOrderData(2n, 1n, 0n, price, 0, true)
+          data: CkbUtils.formatOrderData(2n, 1, 0n, price, 0, true)
         }
         const orderCell2_1 = {
           capacity: '0x4',
@@ -252,7 +252,7 @@ describe('Orders controller', () => {
             args: orderLockArgs,
           },
           type: typeScript,
-          data: CkbUtils.formatOrderData(10n, 1n, 10n, price, 0, true)
+          data: CkbUtils.formatOrderData(10n, 1, 10n, price, 0, true)
         }
         const orderCell2_2 = {
           capacity: '0x1',
@@ -261,7 +261,7 @@ describe('Orders controller', () => {
             args: orderLockArgs,
           },
           type: typeScript,
-          data: CkbUtils.formatOrderData(20n, 1n, 0n, price, 0, true)
+          data: CkbUtils.formatOrderData(20n, 1, 0n, price, 0, true)
         }
         describe('with one input transaction to one output transaction', () => {
           beforeEach(async () => {

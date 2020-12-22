@@ -139,8 +139,8 @@ export const sudtTx = {
       }
     ],
     outputsData: [ 
-      CkbUtils.formatOrderData(4000000000n, 1n, BigInt(1), BigInt(1), 0, false), 
-      CkbUtils.formatOrderData(6000000000n, 1n, BigInt(1), BigInt(1), 0, false),
+      CkbUtils.formatOrderData(4000000000n, 1, BigInt(1), BigInt(1), 0, false), 
+      CkbUtils.formatOrderData(6000000000n, 1, BigInt(1), BigInt(1), 0, false),
       '0x' 
     ],
     headerDeps: [],
@@ -192,7 +192,7 @@ export const preSudtTx: CkbTransactionWithStatusModel = {
       }
     ],
     outputsData: [ '0x', 
-      CkbUtils.formatOrderData(10000000000n, 1n, BigInt(1), BigInt(1), 0, false)],
+      CkbUtils.formatOrderData(10000000000n, 1, BigInt(1), BigInt(1), 0, false)],
     headerDeps: [],
     hash: 'hash0',
     version: "0x0",
@@ -264,8 +264,8 @@ export const sudtTxList =
         }
       ],
       outputs_data: [ 
-        CkbUtils.formatOrderData(4000000000n, 1n, BigInt(1), BigInt(1), 0, false), 
-        CkbUtils.formatOrderData(6000000000n, 1n, BigInt(1), BigInt(1), 0, false),
+        CkbUtils.formatOrderData(4000000000n, 1, BigInt(1), BigInt(1), 0, false), 
+        CkbUtils.formatOrderData(6000000000n, 1, BigInt(1), BigInt(1), 0, false),
         '0x' 
       ],
       version: '0x0',
