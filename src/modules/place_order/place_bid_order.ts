@@ -149,7 +149,7 @@ export default class PlaceBidOrder extends PlaceOrder {
       this.sudtType,
     )
 
-    const receive = PlaceBidOrder.calcBidReceive(this.pay, this.price, this.sudtDecimal)
+    const receive = PlaceBidOrder.calcBidReceive(this.actualPay.toString(), this.price, this.sudtDecimal)
     orderOutput.setHexData(PlaceBidOrder.buildBidData(receive, this.price, this.sudtDecimal))
 
     const changeOutput = new Cell(

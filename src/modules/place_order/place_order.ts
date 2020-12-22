@@ -38,7 +38,7 @@ export default class PlaceOrder {
     this.pay = pay
     this.price = price
     this.sudtDecimal = sudtDecimal
-    this.actualPay = new BigNumber(pay).times(1 + COMMISSION_FEE)
+    this.actualPay = new BigNumber(pay).times(1 - COMMISSION_FEE)
     this.spentCells = spentCells
   }
 
