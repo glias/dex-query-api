@@ -8,14 +8,27 @@ import * as swagger from "swagger-express-ts";
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
+import http from "http";
 import { port } from "./config";
+import { EventContext } from './component/chian_event';
 
 export class DexQueryApiServer {
+  
+  private server: http.Server;
+
   async run(): Promise<void> {
     const bootstrap = new Bootstrap();
     await bootstrap.bootstrap();
-    const server = new InversifyExpressServer(container);
 
+    const app = await this.buildApplication();
+    this.server = http.createServer(app);    
+    EventContext.init(this.server);
+    
+    this.server.listen(port);
+  }
+
+  async buildApplication(): Promise<express.Application> {
+    const server = new InversifyExpressServer(container);
     server.setConfig((app) => {
       app.use(helmet({ contentSecurityPolicy: false }));
       app.use(cors());
@@ -47,10 +60,11 @@ export class DexQueryApiServer {
       );
       
       app.use(morgan('short'));
+      app.use("/index.html", express.static("index.html"));
     });
 
     const serverInstance = server.build();
-    serverInstance.listen(port);
+    return serverInstance;
   }
 }
 

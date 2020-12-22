@@ -60,6 +60,8 @@
     "@nervosnetwork/ckb-sdk-core": "^0.37.0",
     "@types/cors": "^2.8.8",
     "@types/morgan": "^1.9.2",
+    "@types/socket.io": "^2.1.11",
+    "async-mutex": "^0.2.6",
     "bignumber.js": "^9.0.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -70,6 +72,7 @@
     "inversify-express-utils": "^6.3.2",
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io": "^3.0.3",
     "swagger-express-ts": "^1.0.1",
     "swagger-ui-dist": "^3.36.2",
     "winston": "^3.3.3"

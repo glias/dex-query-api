@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minimal working example</title>
+</head>
+<body>
+    <ul id="events"></ul>
+
+    <script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+    <script>
+        const $events = document.getElementById('events');
+
+        const newItem = (content) => {
+          const item = document.createElement('li');
+          item.innerText = content;
+          return item;
+        };
+
+        const socket = io();
+
+        socket.emit('dex-event', "{\"lock\":{\"code_hash\":\"0x58c5f491aba6d61678b7cf7edf4910b1f5e00ec0cde2f42e0abb4fd9aff25a63\",\"hash_type\":\"type\",\"args\":\"0x988485609e16d5d5c62be0a4ae12b665fefcb448\"}}");
+
+        socket.on('order-change', (data) => {
+          console.log(data);
+        });
+
+    </script>
+</body>
+</html>
