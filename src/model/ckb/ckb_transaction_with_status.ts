@@ -33,11 +33,11 @@ export default class CkbTransactionWithStatusModelWrapper {
       outputAmount += amount;
     }
 
-    const groupByInnputTransaction = this.groupByInnputTransaction(inputTransactions);
+    const groupByInputTransaction = this.groupByInputTransaction(inputTransactions);
 
     let inputAmount = BigInt(0);
     for (let i = 0; i < this.ckbTransactionWithStatus.transaction.inputs.length; i++) {
-      const inputTx = groupByInnputTransaction.get(this.ckbTransactionWithStatus.transaction.inputs[i].previousOutput.txHash);
+      const inputTx = groupByInputTransaction.get(this.ckbTransactionWithStatus.transaction.inputs[i].previousOutput.txHash);
       const index = parseInt(this.ckbTransactionWithStatus.transaction.inputs[i].previousOutput.index, 16);
       const cell = inputTx.ckbTransactionWithStatus.transaction.outputs[index];
 
@@ -63,11 +63,11 @@ export default class CkbTransactionWithStatusModelWrapper {
       BigInt(0)
     );
 
-    const groupByInnputTransaction = this.groupByInnputTransaction(inputTransactions);
+    const groupByInputTransaction = this.groupByInputTransaction(inputTransactions);
 
     const inputCells = this.ckbTransactionWithStatus.transaction.inputs.map(
       (input) => {
-        const inputTx = groupByInnputTransaction.get(input.previousOutput.txHash);
+        const inputTx = groupByInputTransaction.get(input.previousOutput.txHash);
         const index = parseInt(input.previousOutput.index, 16);
         return inputTx.ckbTransactionWithStatus.transaction.outputs[index];
       }
@@ -90,11 +90,11 @@ export default class CkbTransactionWithStatusModelWrapper {
       BigInt(0)
     );
 
-    const groupByInnputTransaction = this.groupByInnputTransaction(inputTransactions);
+    const groupByInputTransaction = this.groupByInputTransaction(inputTransactions);
 
     const inputCells = this.ckbTransactionWithStatus.transaction.inputs.map(
       (input) => {
-        const inputTx = groupByInnputTransaction.get(input.previousOutput.txHash);
+        const inputTx = groupByInputTransaction.get(input.previousOutput.txHash);
         const index = parseInt(input.previousOutput.index, 16);
         return inputTx.ckbTransactionWithStatus.transaction.outputs[index];
       }
@@ -142,22 +142,22 @@ export default class CkbTransactionWithStatusModelWrapper {
 
 
 
-  private groupByInnputTransaction(
+  private groupByInputTransaction(
     inputTransactions: Array<CkbTransactionWithStatusModelWrapper>
   ): Map<string, CkbTransactionWithStatusModelWrapper> {
-    const groupByInnputTransaction: Map<
+    const groupByInputTransaction: Map<
       string,
       CkbTransactionWithStatusModelWrapper
     > = new Map<string, CkbTransactionWithStatusModelWrapper>();
 
     for (const tx of inputTransactions) {
-      groupByInnputTransaction.set(
+      groupByInputTransaction.set(
         tx.ckbTransactionWithStatus.transaction.hash,
         tx
       );
     }
 
-    return groupByInnputTransaction;
+    return groupByInputTransaction;
   }
 
   private isSameTypeScript(script1, script2): boolean {

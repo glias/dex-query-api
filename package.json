@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "@ckb-lumos/base": "^0.13.3",
-    "@ckb-lumos/indexer": "^0.14.1",
+    "@ckb-lumos/sql-indexer": "^0.14.0",
     "@lay2/pw-core": "^0.3.20-beta.4",
     "@nervosnetwork/ckb-sdk-core": "^0.37.0",
     "@types/cors": "^2.8.8",
@@ -70,7 +70,9 @@
     "helmet": "^4.2.0",
     "inversify": "^5.0.1",
     "inversify-express-utils": "^6.3.2",
+    "knex": "^0.21.15",
     "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "swagger-express-ts": "^1.0.1",
     "swagger-ui-dist": "^3.36.2",

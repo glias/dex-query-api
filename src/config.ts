@@ -18,7 +18,7 @@ interface Script {
 
 export const contracts: Contracts = {
   orderLock: {
-    codeHash: process.env.ORDER_LOCK_CODE_HASH || "0xeef5d7b6f61dc21be89763907e6966f8b776f33e0bf718c2c718dea90f577dbf",
+    codeHash: process.env.ORDER_LOCK_CODE_HASH || "0xeecb069a62e02582a3e817dd33624462b6a57ab86addf5c8e20916ffb0d38e6d",
     hashType: <HashType>(process.env.ORDER_LOCK_HASH_TYPE || "data"),
     version: 1,
   },

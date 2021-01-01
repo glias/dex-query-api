@@ -1,13 +1,12 @@
 import { Cell, QueryOptions, TransactionWithStatus, Transaction, Script } from "@ckb-lumos/base";
-import {
-  Indexer,
-  CellCollector,
-  TransactionCollector,
-} from "@ckb-lumos/indexer";
 import { inject, injectable, LazyServiceIdentifer } from "inversify";
 import { indexer_config, contracts } from "../../config";
 import { DexOrderData, CkbUtils } from '../../component';
 import { IndexerService } from './indexer_service';
+import knex from "knex";
+import { CellCollector, Indexer } from '@ckb-lumos/sql-indexer';
+import { Reader } from "ckb-js-toolkit";
+import { TransactionCollector } from "../../component/transaction_collector";
 import CkbService from '../ckb/ckb_service';
 import { modules } from '../../ioc';
 
@@ -15,39 +14,55 @@ import { modules } from '../../ioc';
 @injectable()
 export default class IndexerWrapper implements IndexerService {
   private indexer: Indexer;
+  private knex: knex;
 
   constructor(
     @inject(new LazyServiceIdentifer(() => modules[CkbService.name]))
     private ckbService: CkbService,
   ) {
-    this.indexer = new Indexer(indexer_config.nodeUrl, indexer_config.dataPath);
-    this.indexer.startForever();
+    const knex2 = knex({
+      client: 'mysql',
+      connection: {
+        host: '127.0.0.1',
+        port: 3307,
+        user: 'root',
+        password: '123456',
+        database: 'ckb'
+      },
+    });
 
-    setInterval(async () => {
-      const { block_number } = await this.indexer.tip();
-      console.log("indexer tip block", parseInt(block_number, 16));
-    }, 5000);
+    knex2.migrate.up();
+    this.knex = knex2;
+
+    this.indexer = new Indexer(indexer_config.nodeUrl, this.knex);
+    setTimeout(() => {
+      this.indexer.startForever();
+
+      setInterval(async () => {
+        const { block_number } = await this.indexer.tip();
+        console.log("indexer tip block", parseInt(block_number, 16));
+      }, 5000);
+    }, 10000);
   }
 
-  async tip(): Promise<number> {
-    const { block_number } = await this.indexer.tip();
-    return parseInt(block_number, 16);
+  tip(): Promise<number> {
+    throw new Error("Method not implemented.");
   }
 
   async collectCells(queryOptions: QueryOptions): Promise<Array<Cell>> {  
-    const cellCollector = new CellCollector(this.indexer, queryOptions);
+    const cellCollector = new CellCollector(this.knex, queryOptions);
 
     const cells = [];
     for await (const cell of cellCollector.collect()) cells.push(cell);
-    
 
     return cells;
   }
 
   async collectTransactions(queryOptions: QueryOptions): Promise<Array<TransactionWithStatus>> {
     const transactionCollector = new TransactionCollector(
-      this.indexer,
-      queryOptions
+      this.knex,
+      queryOptions,
+      this.indexer['rpc']
     );
 
     const txs = [];
@@ -60,7 +75,7 @@ export default class IndexerWrapper implements IndexerService {
     type: Script
   ): Promise<Record<'ask_orders' | 'bid_orders', Array<DexOrderData>> | null> {
     const transactionCollector = new TransactionCollector(
-      this.indexer,
+      this.knex,
       {
         type,
         lock: {
@@ -73,6 +88,7 @@ export default class IndexerWrapper implements IndexerService {
         },
         order: "desc",
       },
+      this.indexer['rpc']
     );
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

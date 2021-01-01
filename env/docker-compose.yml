@@ -13,4 +13,21 @@ services:
       - ./ckb-testnet:/var/lib/ckb
     command: run
 
-
+  mysql:
+    container_name: mysql
+    restart: always
+    image: mysql:5.7
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: "123456"
+      TZ: Asia/Shanghai
+      entrypoint: /entrypoint.sh
+    volumes:
+      # - /opt/docker/mysql/conf:/etc/mysql/mysql.conf.d
+      - ./opt/docker/mysql/data:/usr/local/mysql/data
+      - ./opt/docker/mysql/logs/:/usr/local/mysql/logs
+      - ./init:/docker-entrypoint-initdb.d
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_bin --init-connect='SET NAMES utf8;' --innodb-flush-log-at-trx-commit=0 --transaction-isolation=READ-COMMITTED
