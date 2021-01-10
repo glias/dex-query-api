@@ -11,6 +11,7 @@ export interface OrdersHistoryModel {
   timestamp: string
   last_order_cell_outpoint?: OutPoint
   order_cells: OutPoint[]
+  type_args: string
 }
 
 export interface OutPoint {

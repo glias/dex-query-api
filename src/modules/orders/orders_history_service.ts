@@ -112,7 +112,8 @@ export default class OrdersHistoryService {
         order_cells: orderCells.map(orderCell => ({
           tx_hash: orderCell.tx.transaction.hash,
           index: `0x${orderCell.index.toString(16)}`
-        }))
+        })),
+        type_args
       }
       normal_orders.push(orderHistory)
     }

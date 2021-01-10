@@ -160,7 +160,8 @@ describe('Orders controller', () => {
                       tx_hash: 'hash2',
                       index: '0x0'
                     },
-                    order_cells: [{ index: '0x0', tx_hash: 'hash1' }]
+                    order_cells: [{ index: '0x0', tx_hash: 'hash1' }],
+                    type_args: 'type args'
                   }
                 ],
                 cross_chain_orders: []
@@ -224,7 +225,8 @@ describe('Orders controller', () => {
                         tx_hash: 'hash3',
                         index: '0x0'
                       },
-                      order_cells: [{ index: '0x0', tx_hash: 'hash1' }, { index: '0x0', tx_hash: 'hash2' }]
+                      order_cells: [{ index: '0x0', tx_hash: 'hash1' }, { index: '0x0', tx_hash: 'hash2' }],
+                      type_args: 'type args'
                     }
                   ],
                   cross_chain_orders: []
@@ -382,7 +384,8 @@ describe('Orders controller', () => {
                         tx_hash: 'hash2',
                         index: '0x0'
                       },
-                      order_cells: [{ index: '0x0', tx_hash: 'hash1' }]
+                      order_cells: [{ index: '0x0', tx_hash: 'hash1' }],
+                      type_args: 'type args'
                     },
                     {
                       block_hash: '0x50c20ecc2b3b56ed336e4d8b840cf99a29069ffa7b279433e1c7093a359657b9',
@@ -398,7 +401,8 @@ describe('Orders controller', () => {
                         tx_hash: 'hash2',
                         index: '0x1'
                       },
-                      order_cells: [{ index: '0x1', tx_hash: 'hash1' }]
+                      order_cells: [{ index: '0x1', tx_hash: 'hash1' }],
+                      type_args: 'type args'
                     }
                   ],
                   cross_chain_orders: []
@@ -548,7 +552,8 @@ describe('Orders controller', () => {
                       tx_hash: 'hash3',
                       index: '0x2'
                     },
-                    order_cells: [{ index: '0x0', tx_hash: 'hash1' }]
+                    order_cells: [{ index: '0x0', tx_hash: 'hash1' }],
+                    type_args: 'type args'
                   },
                   {
                     block_hash: '0x50c20ecc2b3b56ed336e4d8b840cf99a29069ffa7b279433e1c7093a359657b9',
@@ -564,7 +569,8 @@ describe('Orders controller', () => {
                       tx_hash: 'hash3',
                       index: '0x1'
                     },
-                    order_cells: [{ index: '0x0', tx_hash: 'hash2' }]
+                    order_cells: [{ index: '0x0', tx_hash: 'hash2' }],
+                    type_args: 'type args'
                   }
                 ],
                 cross_chain_orders: []
@@ -661,7 +667,8 @@ describe('Orders controller', () => {
                   tx_hash: 'hash2',
                   index: '0x0'
                 },
-                order_cells: [{ index: '0x0', tx_hash: 'hash1' }]
+                order_cells: [{ index: '0x0', tx_hash: 'hash1' }],
+                type_args: 'type args'
               }
             ],
             cross_chain_orders: []
@@ -730,7 +737,8 @@ describe('Orders controller', () => {
                   tx_hash: 'hash1',
                   index: '0x0'
                 },
-                order_cells: [{ index: '0x0', tx_hash: 'hash1' }]
+                order_cells: [{ index: '0x0', tx_hash: 'hash1' }],
+                type_args: 'type args'
               }
             ],
             cross_chain_orders: []
