@@ -74,7 +74,7 @@ export default class OrdersService {
         return cell
       })
 
-    const orderCells = this.filterExactDivision(liveCells, decimal)
+    const orderCells = liveCells
 
     const dexOrdersBid = this.filterDexOrder(orderCells, true)
     const groupbyPriceBid: Map<string, DexOrderCellFormat[]> = this.groupbyPrice(dexOrdersBid, decimal)
@@ -219,23 +219,5 @@ export default class OrdersService {
     }
 
     return groupbyPrice
-  }
-
-  private filterExactDivision (liveCells: Cell[], decimal: string): Cell[] {
-    return liveCells.filter(x => {
-      const data = CkbUtils.parseOrderData(x.data)
-      if (data.isBid) {
-        const freeCapacity = new BigNumber(x.cell_output.capacity, 16)
-          .minus(new BigNumber(CkbUtils.getOrderCellCapacitySize().toString()))
-          .div(1000)
-          .multipliedBy(997).multipliedBy(new BigNumber(10).pow(30))
-        const costAmount = new BigNumber(data.orderAmount.toString()).div(new BigNumber(10).pow(decimal)).multipliedBy(new BigNumber(10).pow(30))
-        if (freeCapacity.mod(costAmount).eq(0)) {
-          return x
-        }
-      } else {
-        return x
-      }
-    })
   }
 }
