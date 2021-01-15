@@ -760,7 +760,7 @@ describe('Orders controller', () => {
           req.query.type_code_hash = TYPE_SCRIPT.code_hash
           req.query.type_hash_type = TYPE_SCRIPT.hash_type
           req.query.type_args = TYPE_SCRIPT.args
-          req.query.decimal = '18'
+          req.query.decimal = '2'
 
           mock_repository.mockCollectTransactions().resolves(dexOrderTransactions)
         })
@@ -768,7 +768,7 @@ describe('Orders controller', () => {
           await controller.getOrders(req, res, next)
           res.status.should.have.been.calledWith(200)
           res.json.should.have.been.calledWith({
-            ask_orders: [{ price: '100000000000000', receive: '236944947979' }, { price: '98760000000000', receive: '296280000' }, { price: '43210000000000', receive: '1' }],
+            ask_orders: [{ price: '10000000000', receive: '236944947979' }, { price: '9876000000', receive: '296280000' }],
             bid_orders: [{ price: '400000', receive: '2500000' }]
           })
         })
