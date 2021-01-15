@@ -59,8 +59,8 @@ export const dexOrderTransactions = [
         type: null
       }],
       outputs_data: [
-        CkbUtils.formatOrderData(300900000000000000n, 1, 300000000000n, 10000000000n, 0, false),
-        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 3882179964084n, 0, false),
+        CkbUtils.formatOrderData(300900000000000000n, 1, 300000000000n, 100000000000000n, 0, false),
+        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 38821799640843962n, 0, false),
         '0x'
       ],
       version: '0x0',
@@ -158,9 +158,9 @@ export const dexOrderTransactions = [
       ],
       outputs_data: [
         CkbUtils.formatOrderData(370199999998479n, 1, 0n, 0n, 0, false),
-        CkbUtils.formatOrderData(39774017177571400n, 1, 1n, 4321000000n, 0, false),
-        CkbUtils.formatOrderData(123399999999493121n, 1, 506879n, 10000000000n, 0, true),
-        CkbUtils.formatOrderData(237655782822937000n, 1, 236944947979n, 10000000000n, 0, false)
+        CkbUtils.formatOrderData(39774017177571400n, 1, 1n, 43210000000000n, 0, false),
+        CkbUtils.formatOrderData(123399999999493121n, 1, 506879n, 100000000000000n, 0, true),
+        CkbUtils.formatOrderData(237655782822937000n, 1, 236944947979n, 100000000000000n, 0, false)
       ],
       version: '0x0',
       witnesses: []
@@ -229,8 +229,8 @@ export const dexOrderTransactions = [
         }
       ],
       outputs_data: [
-        CkbUtils.formatOrderData(300900000000000n, 1, 296280000n, 9876000000n, 0, false),
-        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 3882179964084n, 0, false),
+        CkbUtils.formatOrderData(300900000000000n, 1, 296280000n, 98760000000000n, 0, false),
+        CkbUtils.formatOrderData(57836558651830568n, 1, 38821799640843962n, 38821799640843962n, 0, false),
         '0x'
       ],
       version: '0x0',
