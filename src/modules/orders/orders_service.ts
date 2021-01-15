@@ -218,31 +218,6 @@ export default class OrdersService {
       priceArr.push(dexOrder)
     }
 
-    return this.filterPrecision(groupbyPrice, decimal)
-  }
-
-  private filterPrecision (orders: Map<string, DexOrderCellFormat[]>, decimal: string): Map<string, DexOrderCellFormat[]> {
-    const groupbyPrice: Map<string, DexOrderCellFormat[]> = new Map()
-    orders.forEach((value, key) => {
-      const price = new BigNumber(key)
-      const orderAmount = value.map(x => x.orderAmount).reduce((a1, a2) => a1 + a2)
-      let receive: BigNumber
-      let pay: BigNumber
-      if (value[0].isBid) {
-        receive = new BigNumber(orderAmount).div(new BigNumber(10).pow(decimal))
-        pay = price.minus(receive.toFixed(4))
-      } else {
-        receive = new BigNumber(orderAmount).div(new BigNumber(10).pow(8))
-        pay = receive.div(price)
-      }
-
-      if (receive.toFixed(4) === '0.0000' || pay.toFixed(4) === '0.0000') {
-        return
-      }
-
-      groupbyPrice.set(key, value)
-    })
-
     return groupbyPrice
   }
 }
