@@ -12,6 +12,7 @@ export class MockRepositoryFactory {
 }
 
 export class MockRepository implements DexRepository {
+  getTxsByBlockHash: (blockHash: string) => Promise<CkbTransactionWithStatusModelWrapper[]>
   async getForceBridgeHistory (ckbAddress: string, ethAddress: string, pureCross: boolean): Promise<[]> {
     return []
   }

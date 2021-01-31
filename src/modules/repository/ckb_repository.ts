@@ -19,6 +19,10 @@ export default class CkbRepository implements DexRepository {
     private readonly ckbService: CkbService
   ) {}
 
+  async getTxsByBlockHash (blockHash: string): Promise<CkbTransactionWithStatusModelWrapper[]> {
+    return await this.ckbService.getTxsByBlockHash(blockHash)
+  }
+
   async getForceBridgeHistory (ckbAddress: string, ethAddress: string): Promise<[]> {
     const orderLock = new pw.Script(
       contracts.orderLock.codeHash,

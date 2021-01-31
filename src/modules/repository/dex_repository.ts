@@ -15,4 +15,6 @@ export interface DexRepository extends IndexerService, ForceBridgeRepository {
 
   getInputOutPointFromTheTxPool: () => Promise<Map<string, CkbTransactionWithStatusModelWrapper>>
 
+  getTxsByBlockHash: (blockHash: string) => Promise<CkbTransactionWithStatusModelWrapper[]>
+
 }

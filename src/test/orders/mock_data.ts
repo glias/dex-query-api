@@ -257,7 +257,7 @@ export const dexOrderTransactions = [
       ],
       outputs: [
         {
-          capacity: `0x${11900000000000n.toString(16)}`,
+          capacity: `0x${1190000000000000n.toString(16)}`,
           lock: {
             args: '0xa02332efd9363b1dbc87458c4064602aee5c61a3167d281fba50abc64466f614',
             code_hash: contracts.orderLock.codeHash,
@@ -280,7 +280,7 @@ export const dexOrderTransactions = [
         }
       ],
       outputs_data: [
-        CkbUtils.formatOrderData(0n, 1, 2500000n, 400000n, 0, true),
+        CkbUtils.formatOrderData(0n, 1, 25000000n, 400000n, 0, true),
         '0x'
       ],
       version: '0x0',

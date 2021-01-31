@@ -47,6 +47,15 @@ export default class CkbService {
     return blockNumber
   }
 
+  async getTxsByBlockHash (blockHash: string): Promise<CkbTransactionWithStatusModelWrapper[]> {
+    const req = []
+    req.push(['getBlock', blockHash])
+    const block = await this.ckbNode.rpc.createBatchRequest(req).exec()
+    const txs = block[0].transactions.map(x => new CkbTransactionWithStatusModelWrapper(x))
+
+    return txs
+  }
+
   async getBlockTimestampByHash (blockHash: string): Promise<string> {
     const req = []
     req.push(['getBlock', blockHash])

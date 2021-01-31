@@ -34,6 +34,12 @@ export const explorerConfig: ExplorerConfig = {
   explorerCorsReferrer: process.env.EXPLORER_CORS_REFERRER ? process.env.EXPLORER_CORS_REFERRER : 'https://explorer.nervos.org/'
 }
 
+export const redisConfiguration = {
+  address: process.env.REDIS_ADDRESS || '127.0.0.1',
+  port: process.env.REDIS_PORT || 6379,
+  auth: process.env.REDIS_AUTH || '123456'
+}
+
 export const env = process.env.NODE_ENV || 'development'
 export const port = process.env.PORT || 7001
 export const forceBridgeServerUrl = process.env.FORCE_BRIDGE_SERVER_ADDRESS || 'http://121.196.29.165:3003'

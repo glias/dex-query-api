@@ -13,4 +13,25 @@ services:
       - ./ckb-testnet:/var/lib/ckb
     command: run
 
+  redis:
+    image: redis
+    container_name: redis
+    command: redis-server --requirepass 123456
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data:/data
 
+
+  phpredisadmin:
+    image: erikdubbelboer/phpredisadmin
+    restart: always
+    ports:
+      - 8088:80
+    environment:
+      REDIS_1_HOST: redis
+      REDIS_1_NAME: redis
+      REDIS_1_PORT: 6379
+      REDIS_1_AUTH: 123456
+      ADMIN_USER: root
+      ADMIN_PASS: 123456

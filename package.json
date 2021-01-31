@@ -11,7 +11,8 @@
     "dev:start": "nodemon node ./build/app.js",
     "lint": "eslint ./src",
     "lint:fix": "eslint --fix ./src",
-    "dev": "tsc && concurrently npm:dev:*"
+    "dev": "tsc && concurrently npm:dev:*",
+    "start": "NODE_ENV=production node --max-old-space-size=8192 ./build/app.js"
   },
   "mocha": {
     "colors": true,
@@ -70,6 +71,7 @@
     "@nervosnetwork/ckb-sdk-core": "^0.38.2",
     "@types/cors": "^2.8.8",
     "@types/morgan": "^1.9.2",
+    "@types/redis": "^2.8.28",
     "@types/request-promise": "^4.1.47",
     "bignumber.js": "^9.0.1",
     "cors": "^2.8.5",
@@ -80,6 +82,7 @@
     "inversify": "^5.0.1",
     "inversify-express-utils": "^6.3.2",
     "morgan": "^1.10.0",
+    "redis": "^3.0.2",
     "reflect-metadata": "^0.1.13",
     "request-promise": "^4.2.6",
     "swagger-express-ts": "^1.0.1",

@@ -10,8 +10,8 @@ ADD src ./src
 RUN npm install -f
 RUN npm install typescript -g
 
-RUN tsc 
+RUN tsc
 
 EXPOSE 8080
 
-CMD [ "node", "./build/app.js" ]
+CMD [ "npm", "start" ]

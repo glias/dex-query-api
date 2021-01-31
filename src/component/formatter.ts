@@ -217,7 +217,7 @@ export class CkbUtils {
     return 7
   }
 
-  static priceUnitConversion(price: string, decimal: string): string {
+  static priceUnitConversion (price: string, decimal: string): string {
     return new BigNumber(price)
       .div(10 ** 20) // 10 * 10 && 20
       .times(new BigNumber(10).pow(parseInt(decimal) - 8)).toString()

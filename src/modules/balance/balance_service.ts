@@ -123,7 +123,10 @@ export default class BalanceService {
     const type = <Script>queryOptions.type
     const scriptEquals: ScriptEquals = new DefaultScriptEquals()
 
-    const mergeCells = await this.dexRepository.collectCells(queryOptions)
+    let mergeCells = await this.dexRepository.collectCells(queryOptions)
+    if (type) {
+      mergeCells = mergeCells.filter(x => scriptEquals.equalsTypeScript(x.cell_output.type, type))
+    }
     const markHashes = new Set()
 
     for (const tx of inputOutPointWithTransaction.values()) {
