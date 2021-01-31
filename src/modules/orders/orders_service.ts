@@ -42,7 +42,7 @@ export default class OrdersService {
 
   private async setCurrentPriceCache (key: string, queryOptions: QueryOptions) {
     // first time
-    if (this.getCurrentPriceCache(key)) {
+    if (this.getCurrentPriceCache(key) == null) {
       const res = await this.repository.collectTransactions(queryOptions)
       this.currentPriceCahce[key] = res
       if (this.currentPriceCacheInterval) {
@@ -63,7 +63,7 @@ export default class OrdersService {
 
   private async setOrdersCache (key: string, queryOptions: QueryOptions) {
     // first time
-    if (this.getOrdersCahce(key)) {
+    if (this.getOrdersCahce(key) == null) {
       const res = await this.repository.collectTransactions(queryOptions)
       this.ordersCache[key] = res
       if (this.ordersCacheInterval) {
