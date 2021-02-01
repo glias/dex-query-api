@@ -7,5 +7,4 @@ export interface DexCache {
 
   get: (key: string) => Promise<string>
 
-  getLock: (key: string) => Promise<boolean>
 }

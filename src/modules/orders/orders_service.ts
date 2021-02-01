@@ -11,6 +11,7 @@ import { DexOrderChain } from '../../model/orders/dex_order_chain'
 import { DexCache } from '../cache/dex_cache'
 import RedisCache from '../cache/redis_cache'
 import * as ckbUtils from '@nervosnetwork/ckb-sdk-utils'
+import { CacheFactory } from '../cache/cache_factory'
 
 interface OrdersResult {
   bid_orders: Array<{receive: string, price: string}>
@@ -19,12 +20,29 @@ interface OrdersResult {
 
 @injectable()
 export default class OrdersService {
+  private readonly orderFactory: CacheFactory
+  private readonly priceFactory: CacheFactory
+
   constructor (
     @inject(new LazyServiceIdentifer(() => modules[CkbRepository.name]))
     private readonly repository: DexRepository,
     @inject(new LazyServiceIdentifer(() => modules[RedisCache.name]))
     private readonly dexCache: DexCache
-  ) {}
+  ) {
+    this.priceFactory = new CacheFactory(dexCache, repository)
+    this.orderFactory = new CacheFactory(dexCache, repository)
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setInterval(async () => {
+      await this.orderFactory.scheduling()
+      console.log('orderFactory scheduling')
+    }, 20000)
+
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
+    setInterval(async () => {
+      await this.priceFactory.scheduling()
+      console.log('priceFactory scheduling')
+    }, 20000)
+  }
 
   private ordersCache: Record<string, TransactionWithStatus[]> = Object.create(null)
 
@@ -212,6 +230,38 @@ export default class OrdersService {
     ).dividedBy(lastMakerOrders.length).toExponential()
   }
 
+<<<<<<< HEAD
+=======
+  private async getCacheCurrentPrice (lock: Script, type: Script): Promise<TransactionWithStatus[]> {
+    const cacheKey = this.getCacheKey(lock, type, 'price')
+    this.priceFactory.putKey(cacheKey, {
+      type,
+      lock: {
+        script: lock,
+        argsLen: 'any'
+      },
+      order: 'desc'
+    })
+
+    const txs = await this.priceFactory.get(cacheKey)
+    if (!txs) {
+      return []
+    }
+    // let txs = await this.dexCache.get(cacheKey)
+    // if (!txs) {
+    //   const queryOption: QueryOptions =
+    //   const orderTxs = await this.repository.collectTransactions(queryOption)
+
+    //   const value = JSON.stringify(orderTxs)
+    //   this.dexCache.setEx(cacheKey, value)
+
+    //   txs = value
+    // }
+
+    return JSON.parse(txs)
+  }
+
+>>>>>>> master
   private isMakerCellValid (order: DexOrderChain): boolean {
     const FEE = BigInt(3)
     const FEE_RATIO = BigInt(1_000)
@@ -394,6 +444,45 @@ export default class OrdersService {
     return orderCells
   }
 
+<<<<<<< HEAD
+=======
+  private async getCacheOrders (lock: Script, type: Script): Promise<TransactionWithStatus[]> {
+    const cacheKey = this.getCacheKey(lock, type, 'orders')
+
+    this.orderFactory.putKey(cacheKey, {
+      type: type,
+      lock: {
+        script: lock,
+        argsLen: 'any'
+      }
+    })
+    const txs = await this.orderFactory.get(cacheKey)
+
+    // let txs = await this.dexCache.get(cacheKey)
+    // if (!txs) {
+    //   const orderTxs = await this.repository.collectTransactions({
+    //     type: type,
+    //     lock: {
+    //       script: lock,
+    //       argsLen: 'any'
+    //     }
+    //   })
+
+    //   const value = JSON.stringify(orderTxs)
+    //   this.dexCache.setEx(cacheKey, value)
+
+    //   txs = value
+    // }
+
+    if (!txs) {
+      return []
+    }
+
+    const orderTxs = JSON.parse(txs)
+    return orderTxs
+  }
+
+>>>>>>> master
   private getCacheKey (lock: Script, type: Script, service: string) {
     const lockScript: CKBComponents.Script = {
       args: lock.args,
